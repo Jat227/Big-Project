@@ -264,30 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         {
-            name: "Groceries",
-            search: "Grocery Food",
-            icon: "fa-basket-shopping",
-            sub: [
-                { name: "Snacks & Chips", search: "Snacks Chips" },
-                { name: "Beverages", search: "Beverages Drinks" },
-                { name: "Dairy Products", search: "Dairy Milk" },
-                { name: "Organic", search: "Organic Food" }
-            ],
-            filters: [
-                { type: "price", label: "Price Range", options: [
-                    { label: "Under ₹100", value: "under_100" },
-                    { label: "₹100 – ₹500", value: "100_500" },
-                    { label: "Over ₹500", value: "over_500" }
-                ]},
-                { type: "keyword", label: "Brand", options: [
-                    { label: "Nestle", value: "nestle" },
-                    { label: "Haldirams", value: "haldirams" },
-                    { label: "Amul", value: "amul" },
-                    { label: "ITC", value: "itc" }
-                ]}
-            ]
-        },
-        {
             name: "Toys & Games",
             search: "Toys Kids Games",
             icon: "fa-puzzle-piece",
@@ -510,26 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             keys: ['makeup', 'lipstick', 'foundation', 'moisturizer', 'skincare', 'sunscreen', 'serum', 'perfume', 'fragrance', 'shampoo', 'conditioner', 'hair oil', 'face wash', 'toner'],
             catName: 'Beauty & Grooming'
-        },
-        {
-            keys: [
-                'milk', 'amul', 'rice', 'dal', 'flour', 'atta', 'maida', 'besan',
-                'oil', 'ghee', 'snack', 'chips', 'biscuit', 'parle', 'britannia',
-                'chocolate', 'cadbury', 'kitkat', 'dairy milk',
-                'juice', 'water', 'beverage', 'drink', 'cold drink',
-                'coke', 'coca cola', 'pepsi', 'sprite', 'fanta', 'thums up',
-                'coffee', 'tea', 'tata tea', 'lipton', 'bru', 'nescafe',
-                'horlicks', 'complan', 'boost', 'bournvita', 'milo',
-                'grocery', 'vegetable', 'fruit', 'masala', 'spice',
-                'sugar', 'salt', 'bread', 'eggs', 'butter', 'cheese', 'paneer',
-                'maggi', 'noodles', 'pasta', 'sauce', 'ketchup',
-                'haldirams', 'lays', 'kurkure', 'namkeen', 'mathri', 'papad',
-                'ice cream', 'yogurt', 'curd', 'lassi',
-                'oats', 'cornflakes', 'muesli', 'protein bar',
-                'jam', 'pickle', 'coconut oil', 'mustard oil', 'sunflower oil',
-                'mineral water', 'water bottle'
-            ],
-            catName: 'Groceries'
         },
         {
             keys: ['toy', 'lego', 'puzzle', 'board game', 'action figure', 'remote control car', 'doll', 'bicycle', 'scooter'],
