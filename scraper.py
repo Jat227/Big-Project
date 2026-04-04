@@ -27,7 +27,7 @@ def scrape_amazon(query):
     url = f"https://www.amazon.in/s?k={query.replace(' ', '+')}"
     results = []
     try:
-        response = requests.get(url, headers=HEADERS, timeout=10)
+        response = requests.get(url, headers=HEADERS, timeout=4)
         soup = BeautifulSoup(response.content, 'html.parser')
         
         items = soup.find_all('div', attrs={'data-component-type': 's-search-result'})
@@ -56,7 +56,7 @@ def scrape_flipkart(query):
     url = f"https://www.flipkart.com/search?q={query.replace(' ', '%20')}"
     results = []
     try:
-        response = requests.get(url, headers=HEADERS, timeout=10)
+        response = requests.get(url, headers=HEADERS, timeout=4)
         soup = BeautifulSoup(response.content, 'html.parser')
         
         items = soup.find_all('a', target="_blank")
@@ -84,6 +84,35 @@ def scrape_flipkart(query):
         pass
     return results
 
+def filter_genuine_products(results, query):
+    """Ensure search results actually match the requested brand to filter out Amazon sponsored junk."""
+    query_lower = query.lower()
+    
+    strict_brands = {
+        'apple': ['apple', 'macbook', 'ipad', 'iphone', 'mac mini', 'airpods', 'imac', 'watch'],
+        'nike': ['nike', 'air max', 'jordan'],
+        'samsung': ['samsung', 'galaxy'],
+        'sony': ['sony', 'playstation', 'ps5', 'ps4'],
+        'dell': ['dell', 'alienware', 'inspiron', 'xps']
+    }
+    
+    target_synonyms = None
+    for brand, synonyms in strict_brands.items():
+        if brand in query_lower:
+            target_synonyms = synonyms
+            break
+            
+    if not target_synonyms:
+        return results
+        
+    filtered = []
+    for item in results:
+        title_lower = item['name'].lower()
+        if any(syn in title_lower for syn in target_synonyms):
+            filtered.append(item)
+            
+    return filtered if filtered else results
+
 def scrape_all(query):
     print(f"Aggregating Search for: {query}")
     
@@ -92,8 +121,8 @@ def scrape_all(query):
         future_amz = executor.submit(scrape_amazon, query)
         future_flp = executor.submit(scrape_flipkart, query)
         
-        amz_base = future_amz.result()
-        flp_base = future_flp.result()
+        amz_base = filter_genuine_products(future_amz.result(), query)
+        flp_base = filter_genuine_products(future_flp.result(), query)
     
     aggregated = []
     max_len = max(len(amz_base), len(flp_base))
