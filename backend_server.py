@@ -7,7 +7,8 @@ Run with:
 """
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -99,3 +100,16 @@ async def task_status(task_id: str):
     from celery_app import celery_app
     result = celery_app.AsyncResult(task_id)
     return {"task_id": task_id, "status": result.status, "result": result.result}
+
+# ── Serve Frontend ────────────────────────────────────────────────────────────
+# Mount current directory as static to serve CSS/JS
+app.mount("/static", StaticFiles(directory="."), name="static")
+
+@app.get("/")
+async def read_index():
+    return FileResponse("index.html")
+
+if __name__ == "__main__":
+    import uvicorn
+    # Use environment variables for Port (important for Render) or fallback to 5001
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
