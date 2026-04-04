@@ -105,7 +105,8 @@ async def task_status(task_id: str):
 # Mount current directory to serve CSS/JS/Images
 app.mount("/static", StaticFiles(directory="."), name="static")
 
-@app.get("/", methods=["GET", "HEAD"])
+@app.get("/")
+@app.head("/")
 async def read_index():
     return FileResponse("index.html")
 
