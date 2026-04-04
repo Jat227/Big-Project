@@ -20,8 +20,5 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY . .
 
-# Expose API port
-EXPOSE 5001
-
-# Default: run FastAPI with uvicorn
-CMD ["uvicorn", "backend_server:app", "--host", "0.0.0.0", "--port", "5001", "--workers", "4"]
+# Run FastAPI with uvicorn, using the PORT environment variable provided by the host (Render)
+CMD uvicorn backend_server:app --host 0.0.0.0 --port ${PORT:-5001}
