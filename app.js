@@ -534,7 +534,13 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'product-card';
             
             // Build the table rows for prices
-            const priceRows = product.prices.sort((a,b) => a.price - b.price).map((priceObj, index) => {
+            const priceRows = product.prices.sort((a, b) => {
+                const aPrimacy = (a.store === 'Amazon' || a.store === 'Flipkart') ? 1 : 0;
+                const bPrimacy = (b.store === 'Amazon' || b.store === 'Flipkart') ? 1 : 0;
+                if (aPrimacy > bPrimacy) return -1;
+                if (aPrimacy < bPrimacy) return 1;
+                return a.price - b.price;
+            }).map((priceObj, index) => {
                 const isLowest = priceObj.price === lowestPriceStore.price;
                 const formattedPrice = priceObj.price.toLocaleString('en-IN');
                 
