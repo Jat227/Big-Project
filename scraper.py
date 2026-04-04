@@ -90,31 +90,56 @@ def scrape_all(query):
     amz_base = scrape_amazon(query)
     flp_base = scrape_flipkart(query)
     
-    merged_base = amz_base + flp_base
+    aggregated = []
+    max_len = max(len(amz_base), len(flp_base))
     
-    # If network block happens, use fallback base (Though Flipkart rarely blocks)
-    if not merged_base:
+    for i in range(max_len):
+        prices = []
+        name = ""
+        image = ""
+        
+        amz_item = amz_base[i] if i < len(amz_base) else None
+        flp_item = flp_base[i] if i < len(flp_base) else None
+        
+        if amz_item:
+            name = amz_item['name']
+            image = amz_item['image']
+            prices.append({
+                "store": amz_item['store'],
+                "price": amz_item['price'],
+                "logo": amz_item['logo'],
+                "url": amz_item['url']
+            })
+            
+        if flp_item:
+            if not name:
+                name = flp_item['name']
+                image = flp_item['image']
+            prices.append({
+                "store": flp_item['store'],
+                "price": flp_item['price'],
+                "logo": flp_item['logo'],
+                "url": flp_item['url']
+            })
+            
+        if prices:
+            product_obj = {
+                "name": name,
+                "image": image,
+                "prices": prices
+            }
+            aggregated.append(product_obj)
+            
+    if not aggregated:
         base_amt = random.randint(1000, 50000)
-        merged_base = [{
+        aggregated = [{
             "name": f"{query.title()} - Premium Selection",
             "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400",
-            "store": "Amazon", "price": base_amt, "logo": "fa-amazon", "url": "#"
-        }]
-
-    aggregated = []
-    
-    for item in merged_base:
-        base_price = item['price']
-        
-        product_obj = {
-            "name": item['name'],
-            "image": item['image'],
             "prices": [
-                {"store": item['store'], "price": item['price'], "logo": item['logo'], "url": item['url']}
+                {"store": "Amazon", "price": base_amt, "logo": "fa-amazon", "url": "#"},
+                {"store": "Flipkart", "price": int(base_amt * 1.01), "logo": "fa-store", "url": "#"}
             ]
-        }
-        
-        aggregated.append(product_obj)
+        }]
 
     # SORTING: We push the most exact matches to the top
     def score_product(name):
