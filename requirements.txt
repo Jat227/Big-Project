@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+httpx
+sqlalchemy[asyncio]
+asyncpg
+aiosqlite
+redis
+aioredis
+celery[redis]
+flower
+slowapi
+python-dotenv
+psycopg2-binary
+beautifulsoup4
+requests

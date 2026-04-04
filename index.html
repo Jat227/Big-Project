@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PriceFinder - Compare & Save</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="header-nav">
+                <div class="logo">
+                    <i class="fa-solid fa-tags"></i> PriceFinder
+                </div>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title">Find the <span>Lowest Price</span> Across the Web</h1>
+                <p class="hero-subtitle">Compare prices across Amazon, Flipkart, Myntra, Nykaa & more &mdash; <strong>new, first-hand products only.</strong></p>
+                
+                <!-- Horizontal Nav Categories -->
+                <nav class="top-categories">
+                    <ul id="categoryList" class="cat-list-horizontal">
+                        <!-- Populated by JS -->
+                    </ul>
+                </nav>
+
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search for any product... e.g., 'iPhone 15' or 'Nike Shoes'">
+                    <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                </div>
+                <p class="firsthand-notice"><i class="fa-solid fa-shield-halved"></i> We only list <strong>brand-new, first-hand products</strong> &mdash; no second-hand, refurbished or used items.</p>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div id="mainLayout" class="layout-container hidden">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar">
+                <div id="filterBlock" class="sidebar-block">
+                    <h3>Filter Results</h3>
+                    <div id="filtersContainer">
+                        <!-- dynamic filters -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content area -->
+            <div class="content-wrapper">
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden">
+                    <div class="loader"></div>
+                    <p>Scanning all platforms for the best deals...</p>
+                </div>
+
+                <!-- Results Section -->
+                <main id="resultsContainer" class="hidden">
+                    <div class="results-header">
+                        <h2>Results for <span id="queryText" class="highlight">"iPhone"</span></h2>
+                    </div>
+                    
+                    <div id="productGrid" class="product-grid">
+                        <!-- Product Cards will be injected here by JS -->
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
