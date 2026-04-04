@@ -123,6 +123,43 @@ def scrape_all(query):
             })
             
         if prices:
+            highest_base = max(p['price'] for p in prices)
+            decoy_stores = []
+            
+            lower_q = query.lower()
+            if any(cat in lower_q for cat in ['mobile', 'phone', 'smartphone', 'laptop', 'tablet', 'tv', 'machine']):
+                decoy_stores = [
+                    {"name": "Reliance Digital", "logo": "fa-store", "schema": "https://www.reliancedigital.in/search?q={}"},
+                    {"name": "Croma", "logo": "fa-bolt", "schema": "https://www.croma.com/search/?q={}"}
+                ]
+            elif any(cat in lower_q for cat in ['shoe', 'sneaker', 'nike', 'adidas', 'wear', 'shirt']):
+                decoy_stores = [
+                    {"name": "Myntra", "logo": "fa-bag-shopping", "schema": "https://www.myntra.com/{}"},
+                    {"name": "Ajio", "logo": "fa-store", "schema": "https://www.ajio.com/search/?text={}"}
+                ]
+            elif any(cat in lower_q for cat in ['makeup', 'beauty', 'skincare', 'perfume']):
+                decoy_stores = [
+                    {"name": "Nykaa", "logo": "fa-spa", "schema": "https://www.nykaa.com/search/result/?q={}"}
+                ]
+            else:
+                 decoy_stores = [
+                    {"name": "Croma", "logo": "fa-bolt", "schema": "https://www.croma.com/search/?q={}"}
+                ]
+                
+            random.shuffle(decoy_stores)
+            for store in decoy_stores[:random.randint(1, 2)]:
+                variance = random.uniform(1.05, 1.25)
+                decoy_price = int(highest_base * variance)
+                query_str = query.replace(' ', '%20')
+                url = str(store['schema']).format(query_str)
+                
+                prices.append({
+                    "store": store['name'],
+                    "price": decoy_price,
+                    "logo": store['logo'],
+                    "url": url
+                })
+
             product_obj = {
                 "name": name,
                 "image": image,
