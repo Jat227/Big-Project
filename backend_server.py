@@ -102,14 +102,15 @@ async def task_status(task_id: str):
     return {"task_id": task_id, "status": result.status, "result": result.result}
 
 # ── Serve Frontend ────────────────────────────────────────────────────────────
-# Mount current directory as static to serve CSS/JS
+# Mount current directory to serve CSS/JS/Images
 app.mount("/static", StaticFiles(directory="."), name="static")
 
-@app.get("/")
+@app.get("/", methods=["GET", "HEAD"])
 async def read_index():
     return FileResponse("index.html")
 
 if __name__ == "__main__":
     import uvicorn
     # Use environment variables for Port (important for Render) or fallback to 5001
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
+    port = int(os.environ.get("PORT", 5001))
+    uvicorn.run(app, host="0.0.0.0", port=port)
