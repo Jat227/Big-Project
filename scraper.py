@@ -87,8 +87,13 @@ def scrape_flipkart(query):
 def scrape_all(query):
     print(f"Aggregating Search for: {query}")
     
-    amz_base = scrape_amazon(query)
-    flp_base = scrape_flipkart(query)
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_amz = executor.submit(scrape_amazon, query)
+        future_flp = executor.submit(scrape_flipkart, query)
+        
+        amz_base = future_amz.result()
+        flp_base = future_flp.result()
     
     aggregated = []
     max_len = max(len(amz_base), len(flp_base))
