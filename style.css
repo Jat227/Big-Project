@@ -1012,11 +1012,160 @@ body {
 }
 
 /* ============================================================
-   DESKTOP / MOBILE PRICE DISPLAY TOGGLE
-   Desktop shows vertical rows; Mobile shows horizontal ticker
+   PER-PLATFORM PRICE TICKER ROWS  (prt-*)
+   Each store gets its own continuously scrolling line.
+   Works on both desktop and mobile.
    ============================================================ */
-.desktop-prices { display: flex; flex-direction: column; gap: 0.5rem; }
-.mobile-prices  { display: none; }
+
+/* Stack of per-store rows inside a card */
+.prt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+/* One row per platform — acts as the overflow clip */
+.prt-row {
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: #f9f9f9;
+    position: relative;
+}
+
+/* Subtle gradient fade on the right to hint there's more */
+.prt-row::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2rem;
+    background: linear-gradient(to right, transparent, #f9f9f9 90%);
+    pointer-events: none;
+}
+
+.prt-row-best {
+    background: var(--success-light);
+    border-color: var(--success-border);
+}
+
+.prt-row-best::after {
+    background: linear-gradient(to right, transparent, #e8f5e9 90%);
+}
+
+/* Scrolling track — duplicated content for seamless loop */
+.prt-track {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    white-space: nowrap;
+    animation: prtScroll 12s linear infinite;
+    padding: 0.55rem 0;
+}
+
+.prt-row:hover .prt-track,
+.prt-row:focus-within .prt-track {
+    animation-play-state: paused;
+}
+
+@keyframes prtScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* Individual elements inside the track */
+.prt-icon {
+    padding: 0 0.5rem 0 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.prt-row-best .prt-icon { color: var(--success); }
+
+.prt-store {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-right: 0.4rem;
+    flex-shrink: 0;
+}
+
+.row-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: var(--success);
+    color: #fff;
+    border-radius: 20px;
+    padding: 0.1rem 0.45rem;
+    margin-right: 0.35rem;
+    flex-shrink: 0;
+}
+
+.prt-sep {
+    color: var(--text-muted);
+    padding: 0 0.5rem;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.prt-price {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    padding-right: 0.65rem;
+    flex-shrink: 0;
+}
+
+.prt-row-best .prt-price { color: var(--success); }
+
+/* The clickable Buy/View Deal button inside each row */
+.prt-btn {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    background: var(--blue);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+    margin-right: 0.5rem;
+}
+
+.prt-btn:hover,
+.prt-btn:focus { background: var(--blue-hover); transform: scale(1.04); }
+
+.prt-row-best .prt-btn { background: var(--success); }
+.prt-row-best .prt-btn:hover { background: #2e7d32; }
+
+/* Invisible spacer so the looping pause feels right */
+.prt-spacer { display: inline-block; width: 3rem; flex-shrink: 0; }
+
+/* Show ticker on mobile, hide vertical rows */
+@media (max-width: 768px) {
+    .desktop-prices { display: none; }
+    .mobile-prices  { display: block; }
+
+    .trending-section { padding: 1.25rem 0.75rem 0.5rem; }
+    .mini-card { flex: 0 0 140px; }
+    .mini-card-img { height: 120px; }
+    .support-notice { margin: 1rem 0.75rem 0; flex-wrap: wrap; gap: 0.6rem; }
+}
+
+@media (max-width: 480px) {
+    .mini-card { flex: 0 0 120px; }
+    .mini-card-img { height: 100px; }
+    .pill-store { max-width: 48px; }
+
+    /* Slightly faster scroll on tiny screens */
+    .prt-track { animation-duration: 8s !important; }
+}
+
 
 /* ============================================================
    PRICE TICKER (mobile horizontal scroll — like sale alert bar)

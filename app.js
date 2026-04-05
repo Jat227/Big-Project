@@ -729,7 +729,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Solid FA icons (not brand icons)
         const solidIcons = new Set(['fa-store','fa-shopping-cart','fa-bullseye','fa-camera','fa-bolt',
             'fa-check','fa-bag-shopping','fa-spa','fa-recycle','fa-heart','fa-shopping-bag']);
 
@@ -738,7 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'product-card';
 
-            // Sort: Amazon & Flipkart first, then by price
+            // Sort: Amazon & Flipkart first, then lowest price first
             const sorted = [...product.prices].sort((a, b) => {
                 const ap = (a.store==='Amazon'||a.store==='Flipkart') ? 1 : 0;
                 const bp = (b.store==='Amazon'||b.store==='Flipkart') ? 1 : 0;
@@ -746,38 +745,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 return a.price - b.price;
             });
 
-            // Desktop: vertical stack of price rows
-            const priceRowsHTML = sorted.map(priceObj => {
+            // Each platform gets its own independently scrolling ticker row
+            // Content is duplicated inside the track for a seamless infinite loop
+            const priceTickerRows = sorted.map((priceObj, idx) => {
                 const isLowest  = priceObj.price === lowestPriceStore.price;
                 const formatted = priceObj.price.toLocaleString('en-IN');
                 const iconClass = solidIcons.has(priceObj.logo) ? 'fa-solid' : 'fa-brands';
-                return `
-                    <div class="price-row ${isLowest ? 'best-price' : ''}">
-                        <div class="store-info">
-                            <i class="${iconClass} ${priceObj.logo}"></i>
-                            <span>${priceObj.store}</span>
-                            ${isLowest ? '<span class="badge">Lowest</span>' : ''}
-                        </div>
-                        <div class="price-action">
-                            <span class="price-amount">₹${formatted}</span>
-                            <a href="${priceObj.url}" target="_blank" rel="noopener" class="buy-btn">View Deal</a>
-                        </div>
-                    </div>`;
-            }).join('');
+                const lowestBadge = isLowest ? '<span class="row-badge">Lowest ✓</span>' : '';
 
-            // Mobile ticker: horizontal scrolling strip with price pills
-            const tickerItems = [...sorted, ...sorted].map(priceObj => {
-                const isLowest  = priceObj.price === lowestPriceStore.price;
-                const formatted = priceObj.price.toLocaleString('en-IN');
-                const iconClass = solidIcons.has(priceObj.logo) ? 'fa-solid' : 'fa-brands';
+                // Inner content duplicated so the track loops seamlessly
+                const inner = `
+                    <span class="prt-icon"><i class="${iconClass} ${priceObj.logo}"></i></span>
+                    <span class="prt-store">${priceObj.store}</span>
+                    ${lowestBadge}
+                    <span class="prt-sep">·</span>
+                    <span class="prt-price">₹${formatted}</span>
+                    <a href="${priceObj.url}" target="_blank" rel="noopener" class="prt-btn" onclick="event.stopPropagation()">View Deal →</a>
+                    <span class="prt-spacer"></span>`;
+
+                // Stagger speed slightly per row to feel natural (9–15s)
+                const dur = 9 + (idx % 4) * 1.5;
+
                 return `
-                    <a href="${priceObj.url}" target="_blank" rel="noopener"
-                       class="price-pill ${isLowest ? 'price-pill-best' : ''}">
-                        <i class="${iconClass} ${priceObj.logo}"></i>
-                        <span class="pill-store">${priceObj.store}</span>
-                        <span class="pill-price">₹${formatted}</span>
-                        <span class="pill-btn">Buy</span>
-                    </a>`;
+                <div class="prt-row ${isLowest ? 'prt-row-best' : ''}">
+                    <div class="prt-track" style="animation-duration:${dur}s;">
+                        ${inner}${inner}
+                    </div>
+                </div>`;
             }).join('');
 
             const cheapestUrl = lowestPriceStore.url;
@@ -787,16 +781,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </a>
                 <div class="product-info">
                     <h3 class="product-title">${product.name}</h3>
-                    <!-- Desktop view: vertical rows -->
-                    <div class="price-comparison desktop-prices">${priceRowsHTML}</div>
-                    <!-- Mobile view: horizontal ticker -->
-                    <div class="price-ticker mobile-prices">
-                        <div class="price-ticker-track">${tickerItems}</div>
-                    </div>
+                    <div class="prt-list">${priceTickerRows}</div>
                 </div>
             `;
             productGrid.appendChild(card);
         });
     }
 });
-
