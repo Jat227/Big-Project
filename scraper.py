@@ -212,21 +212,11 @@ def scrape_all(query):
         if flp_match:
             prices.append({"store": flp_match['store'], "price": flp_match['price'],
                            "logo": flp_match['logo'], "url": flp_match['url']})
-        else:
-            # No close Flipkart match: add a Flipkart *search* link for this product name
-            fk_search_url = f"https://www.flipkart.com/search?q={amz_item['name'].replace(' ', '+')}"
-            # We don't add a fake price — just skip Flipkart for this card
-            # (A search link will be added via the store URL builder below if needed)
 
-        # Add affiliate/search links for comparison stores (Croma, Myntra, etc.)
-        highest_base = max(p['price'] for p in prices)
-        sampled = random.sample(platform_pool, min(len(platform_pool), random.randint(1, 2)))
-        for store in sampled:
-            variance    = random.uniform(1.05, 1.28)
-            decoy_price = int(highest_base * variance)
-            url         = build_store_url(store['schema'], amz_item['name'])
-            prices.append({"store": store['name'], "price": decoy_price,
-                           "logo": store['logo'], "url": url})
+        # ── Only real scraped prices are shown ──────────────────────────────
+        # Croma / Myntra / AJIO / Nykaa etc. are intentionally NOT added here
+        # with fake prices. They will appear only when their real APIs are
+        # integrated and we have actual verified pricing data.
 
         aggregated.append({"name": amz_item['name'], "image": amz_item['image'], "prices": prices})
 
@@ -234,19 +224,12 @@ def scrape_all(query):
     for idx, flp_item in enumerate(flp_base):
         if idx in flp_used:
             continue
+        # Only real Flipkart price — no fake comparison store prices
         prices = [{"store": flp_item['store'], "price": flp_item['price'],
                    "logo": flp_item['logo'], "url": flp_item['url']}]
-
-        highest_base = flp_item['price']
-        sampled = random.sample(platform_pool, min(len(platform_pool), 1))
-        for store in sampled:
-            variance    = random.uniform(1.05, 1.28)
-            decoy_price = int(highest_base * variance)
-            url         = build_store_url(store['schema'], flp_item['name'])
-            prices.append({"store": store['name'], "price": decoy_price,
-                           "logo": store['logo'], "url": url})
-
         aggregated.append({"name": flp_item['name'], "image": flp_item['image'], "prices": prices})
+
+
 
     # ── Fallback if both scrapers failed ────────────────────────────────────
     if not aggregated:
