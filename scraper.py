@@ -96,15 +96,26 @@ def filter_genuine_products(results, query):
 def name_similarity(a, b):
     """
     Word-level Jaccard similarity between two product name strings.
-    Strips common colour, storage, and variant noise so that
-    'iPhone 15 128GB Blue' still matches 'Apple iPhone 15 (Midnight, 256GB)'.
-    Returns 0.0–1.0.  Threshold for "same product" is 0.20.
+    RULE 1 (hard-block): If both names contain version numbers and those
+    numbers differ, return 0.0 immediately — e.g. iPhone 15 ≠ iPhone 16e.
+    RULE 2 (noise-strip): Colour, storage, and variant words are stripped
+    so 'iPhone 16e 128GB Blue' still matches 'Apple iPhone 16e (Midnight)'.
+    Returns 0.0–1.0.
     """
+    # Extract product version tokens: bare numbers (15, 16) and suffixed ones (16e, 17pro)
+    def extract_versions(s):
+        return set(re.findall(r'\b(\d{1,2}[a-z]{0,3})\b', s.lower()))
+
+    va, vb = extract_versions(a), extract_versions(b)
+    # If both have version numbers and they share NONE, they are different products
+    if va and vb and not (va & vb):
+        return 0.0
+
     noise = re.compile(
-        r'\b(\d+\s*(gb|tb|mb|mp)|'            # storage / camera
+        r'\b(\d+\s*(gb|tb|mb|mp)|'
         r'black|white|blue|green|red|gold|silver|midnight|starlight|'
         r'titanium|natural|pink|purple|yellow|'
-        r'plus|pro\s*max|ultra|lite|neo|'      # variant suffixes (keep 'pro' as it's brand-specific)
+        r'plus|pro\s*max|ultra|lite|neo|'
         r'single|double|tri|quad)\b',
         re.I
     )
@@ -133,8 +144,8 @@ def name_similarity(a, b):
 # ─────────────────────────────────────────────────────────────────────────────
 PLATFORM_STORE_MAP = {
     "electronics": [
-        {"name": "Croma",            "logo": "fa-bolt",        "schema": "https://www.croma.com/search/?q={q}&searchOn=clp",    "color": "#01579b"},
-        {"name": "Reliance Digital", "logo": "fa-store",       "schema": "https://www.reliancedigital.in/search?q={q}",         "color": "#cc0000"},
+        {"name": "Croma",            "logo": "fa-bolt",  "schema": "https://www.croma.com/search/?q={q}&searchOn=clp",              "color": "#01579b"},
+        {"name": "Reliance Digital", "logo": "fa-store", "schema": "https://www.reliancedigital.in/clp/common/search?query={q}",     "color": "#cc0000"},
     ],
     "fashion": [
         {"name": "Myntra", "logo": "fa-bag-shopping", "schema": "https://www.myntra.com/{q}",              "color": "#ff3f6c"},
@@ -149,8 +160,8 @@ PLATFORM_STORE_MAP = {
         {"name": "Purplle", "logo": "fa-heart", "schema": "https://www.purplle.com/search?q={q}",       "color": "#7b1fa2"},
     ],
     "default": [
-        {"name": "Croma",            "logo": "fa-bolt",  "schema": "https://www.croma.com/search/?q={q}&searchOn=clp",    "color": "#01579b"},
-        {"name": "Reliance Digital", "logo": "fa-store", "schema": "https://www.reliancedigital.in/search?q={q}",         "color": "#cc0000"},
+        {"name": "Croma",            "logo": "fa-bolt",  "schema": "https://www.croma.com/search/?q={q}&searchOn=clp",              "color": "#01579b"},
+        {"name": "Reliance Digital", "logo": "fa-store", "schema": "https://www.reliancedigital.in/clp/common/search?query={q}",     "color": "#cc0000"},
     ],
 }
 
@@ -173,9 +184,32 @@ def get_category(query_lower):
         return "beauty"
     return "default"
 
+def simplify_product_name(name):
+    """
+    Strip storage, colour, and bracket specs from a product name so Croma/
+    Reliance/Myntra get a clean, short search query (brand + model only).
+    e.g. 'Apple iPhone 16e (512 GB) (White)' → 'Apple iPhone 16e'
+    """
+    # Remove anything in parentheses
+    name = re.sub(r'\(.*?\)', '', name)
+    # Remove storage specs like 512GB / 256 GB
+    name = re.sub(r'\b\d+\s*(?:gb|tb|mb)\b', '', name, flags=re.I)
+    # Remove colours
+    name = re.sub(
+        r'\b(black|white|blue|green|red|gold|silver|midnight|starlight|'
+        r'titanium|natural|pink|purple|yellow|graphite|green|coral|teal)\b',
+        '', name, flags=re.I
+    )
+    # Collapse whitespace and trailing punctuation
+    name = re.sub(r'[,\-|]+$', '', re.sub(r'\s{2,}', ' ', name)).strip()
+    # Limit to first 5 words to keep the query concise
+    return ' '.join(name.split()[:5])
+
 def build_store_url(schema, product_name):
-    """Build a store search URL using the product name. Uses + encoding."""
-    q = product_name.replace(' ', '+')
+    """Build a store search URL using a SIMPLIFIED product name.
+    Uses + encoding (safer than %20 for Indian e-commerce sites).
+    """
+    q = simplify_product_name(product_name).replace(' ', '+')
     return schema.replace('{q}', q)
 
 def scrape_all(query):
