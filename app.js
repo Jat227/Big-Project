@@ -733,41 +733,47 @@ document.addEventListener('DOMContentLoaded', () => {
             'fa-check','fa-bag-shopping','fa-spa','fa-recycle','fa-heart','fa-shopping-bag']);
 
         productsToRender.forEach(product => {
-            const lowestPriceStore = product.prices.reduce((prev, curr) => prev.price < curr.price ? prev : curr);
+            // For lowest-price comparison, only use real (non-estimated) prices
+            const realPrices = product.prices.filter(p => !p.estimated);
+            const pricesForLowest = realPrices.length ? realPrices : product.prices;
+            const lowestPriceStore = pricesForLowest.reduce((prev, curr) => prev.price < curr.price ? prev : curr);
+
             const card = document.createElement('div');
             card.className = 'product-card';
 
-            // Sort: Amazon & Flipkart first, then lowest price first
+            // Sort: Amazon & Flipkart (real) first, then estimated, then by price
             const sorted = [...product.prices].sort((a, b) => {
-                const ap = (a.store==='Amazon'||a.store==='Flipkart') ? 1 : 0;
-                const bp = (b.store==='Amazon'||b.store==='Flipkart') ? 1 : 0;
+                const ap = (a.store==='Amazon'||a.store==='Flipkart') ? 2 : (a.estimated ? 0 : 1);
+                const bp = (b.store==='Amazon'||b.store==='Flipkart') ? 2 : (b.estimated ? 0 : 1);
                 if (ap !== bp) return bp - ap;
                 return a.price - b.price;
             });
 
             // Each platform gets its own independently scrolling ticker row
-            // Content is duplicated inside the track for a seamless infinite loop
             const priceTickerRows = sorted.map((priceObj, idx) => {
-                const isLowest  = priceObj.price === lowestPriceStore.price;
+                const isLowest  = !priceObj.estimated && priceObj.price === lowestPriceStore.price;
                 const formatted = priceObj.price.toLocaleString('en-IN');
                 const iconClass = solidIcons.has(priceObj.logo) ? 'fa-solid' : 'fa-brands';
                 const lowestBadge = isLowest ? '<span class="row-badge">Lowest ✓</span>' : '';
+                // Mark estimated prices clearly so users know API is pending
+                const estBadge   = priceObj.estimated ? '<span class="row-est-badge">est.</span>' : '';
+                const priceDisp  = priceObj.estimated ? `~₹${formatted}` : `₹${formatted}`;
 
-                // Inner content duplicated so the track loops seamlessly
                 const inner = `
                     <span class="prt-icon"><i class="${iconClass} ${priceObj.logo}"></i></span>
                     <span class="prt-store">${priceObj.store}</span>
-                    ${lowestBadge}
+                    ${lowestBadge}${estBadge}
                     <span class="prt-sep">·</span>
-                    <span class="prt-price">₹${formatted}</span>
-                    <a href="${priceObj.url}" target="_blank" rel="noopener" class="prt-btn" onclick="event.stopPropagation()">View Deal →</a>
+                    <span class="prt-price ${priceObj.estimated ? 'prt-price-est' : ''}">${priceDisp}</span>
+                    <a href="${priceObj.url}" target="_blank" rel="noopener" class="prt-btn ${priceObj.estimated ? 'prt-btn-est' : ''}" onclick="event.stopPropagation()">
+                        ${priceObj.estimated ? 'Check Price →' : 'View Deal →'}
+                    </a>
                     <span class="prt-spacer"></span>`;
 
-                // Stagger speed slightly per row to feel natural (9–15s)
                 const dur = 9 + (idx % 4) * 1.5;
 
                 return `
-                <div class="prt-row ${isLowest ? 'prt-row-best' : ''}">
+                <div class="prt-row ${isLowest ? 'prt-row-best' : ''} ${priceObj.estimated ? 'prt-row-est' : ''}">
                     <div class="prt-track" style="animation-duration:${dur}s;">
                         ${inner}${inner}
                     </div>
