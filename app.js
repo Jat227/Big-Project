@@ -41,32 +41,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Sale Alert Ticker ───────────────────────────────────────────────────
+    // ── Sale Alert Ticker (all with direct sale/deals page URLs) ────────────
     const SALE_ALERTS = [
-        { icon: 'fa-bolt',         platform: 'Amazon',   text: 'Up to 40% OFF on Smartphones!' },
-        { icon: 'fa-tag',          platform: 'Flipkart', text: 'Big Saving Days — Electronics up to 60% OFF' },
-        { icon: 'fa-fire',         platform: 'Amazon',   text: 'Today\'s Deal: Apple iPhone 15 — Limited Stock' },
-        { icon: 'fa-percent',      platform: 'Flipkart', text: 'Fashion Sale — Min 50% OFF on Top Brands' },
-        { icon: 'fa-bolt',         platform: 'Amazon',   text: 'Prime Deal: Smart TVs from ₹7,999' },
-        { icon: 'fa-tag',          platform: 'Flipkart', text: 'Laptops & Accessories — Extra 10% Bank Offer' },
-        { icon: 'fa-fire',         platform: 'Amazon',   text: 'Beauty & Grooming — Up to 35% OFF' },
-        { icon: 'fa-percent',      platform: 'Flipkart', text: 'Home Appliances Fest — Discounts up to 45%' },
+        // Amazon
+        { icon: 'fa-bolt',    platform: 'Amazon',           color: '#ff9f00', text: 'Up to 40% OFF on Smartphones — Today Only!',      url: 'https://www.amazon.in/deals' },
+        { icon: 'fa-fire',    platform: 'Amazon',           color: '#ff9f00', text: 'Apple iPhone 15 — Limited Stock Deal!',            url: 'https://www.amazon.in/s?k=iphone+15&deals-widget=%7B%22version%22%3A1%7D' },
+        { icon: 'fa-percent', platform: 'Amazon',           color: '#ff9f00', text: 'Prime Deal: Smart TVs from ₹7,999',               url: 'https://www.amazon.in/deals?deals-widget=%7B%22version%22%3A1%2C%22browseNodeId%22%3A1389396031%7D' },
+        { icon: 'fa-tag',     platform: 'Amazon',           color: '#ff9f00', text: 'Laptops & Accessories — Extra Bank Discounts',      url: 'https://www.amazon.in/s?k=laptops&deals-widget=%7B%22version%22%3A1%7D' },
+        // Flipkart
+        { icon: 'fa-tag',     platform: 'Flipkart',         color: '#2874f0', text: 'Big Saving Days — Electronics up to 60% OFF',      url: 'https://www.flipkart.com/offers-list/big-saving-days' },
+        { icon: 'fa-percent', platform: 'Flipkart',         color: '#2874f0', text: 'Fashion Sale — Min 50% OFF on Top Brands',         url: 'https://www.flipkart.com/clothing-and-accessories' },
+        { icon: 'fa-bolt',    platform: 'Flipkart',         color: '#2874f0', text: 'Home Appliance Fest — Up to 45% OFF',              url: 'https://www.flipkart.com/offers-list/home-appliances-deals' },
+        { icon: 'fa-fire',    platform: 'Flipkart',         color: '#2874f0', text: 'Beauty Products — Up to 35% OFF',                  url: 'https://www.flipkart.com/beauty-and-personal-care' },
+        // Croma
+        { icon: 'fa-bolt',    platform: 'Croma',            color: '#01579b', text: 'Electronics Sale — Up to 30% OFF on Laptops & TVs', url: 'https://www.croma.com/offers' },
+        { icon: 'fa-percent', platform: 'Croma',            color: '#01579b', text: 'Mobiles — Best Prices + Exchange Offers',          url: 'https://www.croma.com/mobile-phones' },
+        // Reliance Digital
+        { icon: 'fa-store',   platform: 'Reliance Digital', color: '#cc0000', text: 'Weekend Sale — Smart ACs & Refrigerators on Offer', url: 'https://www.reliancedigital.in/offers' },
+        // Myntra
+        { icon: 'fa-bag-shopping', platform: 'Myntra',      color: '#ff3f6c', text: 'End of Reason Sale — Fashion up to 80% OFF',       url: 'https://www.myntra.com/myntra-big-fashion-festival' },
+        { icon: 'fa-tag',    platform: 'Myntra',            color: '#ff3f6c', text: 'Nike & Adidas — Exclusive Offers on Footwear',      url: 'https://www.myntra.com/sport-shoes' },
+        // AJIO
+        { icon: 'fa-shopping-bag', platform: 'AJIO',        color: '#e91e63', text: 'Grand Orange Sale — Up to 85% OFF on Fashion',     url: 'https://www.ajio.com/s/deal-of-the-day-8521541' },
+        { icon: 'fa-percent', platform: 'AJIO',             color: '#e91e63', text: 'Trending Styles — New Arrivals Every Day',          url: 'https://www.ajio.com/new-arrivals' },
+        // Nykaa
+        { icon: 'fa-spa',     platform: 'Nykaa',            color: '#fc2779', text: 'Nykaa Beauty Carnival — Up to 50% OFF',            url: 'https://www.nykaa.com/offers/beauty-offers' },
+        { icon: 'fa-heart',   platform: 'Nykaa',            color: '#fc2779', text: 'Skincare & Makeup — Top Brands at Best Prices',     url: 'https://www.nykaa.com/offers' },
     ];
 
     const buildSaleAlerts = () => {
         const track = document.getElementById('saleAlertTrack');
         if (!track) return;
-        // Duplicate for seamless loop
-        const items = [...SALE_ALERTS, ...SALE_ALERTS];
+        const items = [...SALE_ALERTS, ...SALE_ALERTS]; // duplicate for seamless loop
         track.innerHTML = items.map(a => `
-            <span class="sale-alert-item">
+            <a class="sale-alert-item" href="${a.url}" target="_blank" rel="noopener" title="Go to ${a.platform} sale">
                 <i class="fa-solid ${a.icon}"></i>
-                <span class="platform-tag">${a.platform}</span>
+                <span class="platform-tag" style="background:${a.color}55;">${a.platform}</span>
                 ${a.text}
-            </span>
+            </a>
         `).join('');
     };
     buildSaleAlerts();
+
 
     // ── Trending Products (static curated — will be dynamic with real API) ──
     const TRENDING_DATA = [
@@ -706,39 +722,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const renderProducts = (productsToRender) => {
-
         productGrid.innerHTML = '';
 
         if (productsToRender.length === 0) {
-            productGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; font-size: 1.2rem; margin-top: 2rem; color: var(--text-secondary);">No products or similar items found. Try a different search.</div>';
+            productGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;font-size:1.1rem;margin-top:2rem;color:var(--text-secondary);">No products found. Try a different search.</div>';
             return;
         }
 
-        productsToRender.forEach(product => {
-            // Find lowest price
-            const lowestPriceStore = product.prices.reduce((prev, curr) => prev.price < curr.price ? prev : curr);
+        // Solid FA icons (not brand icons)
+        const solidIcons = new Set(['fa-store','fa-shopping-cart','fa-bullseye','fa-camera','fa-bolt',
+            'fa-check','fa-bag-shopping','fa-spa','fa-recycle','fa-heart','fa-shopping-bag']);
 
+        productsToRender.forEach(product => {
+            const lowestPriceStore = product.prices.reduce((prev, curr) => prev.price < curr.price ? prev : curr);
             const card = document.createElement('div');
             card.className = 'product-card';
-            
-            // Build the table rows for prices
-            const priceRows = product.prices.sort((a, b) => {
-                const aPrimacy = (a.store === 'Amazon' || a.store === 'Flipkart') ? 1 : 0;
-                const bPrimacy = (b.store === 'Amazon' || b.store === 'Flipkart') ? 1 : 0;
-                if (aPrimacy > bPrimacy) return -1;
-                if (aPrimacy < bPrimacy) return 1;
-                return a.price - b.price;
-            }).map((priceObj, index) => {
-                const isLowest = priceObj.price === lowestPriceStore.price;
-                const formattedPrice = priceObj.price.toLocaleString('en-IN');
-                
-                // Determine icon weight based on FontAwesome limitations
-                let iconClass = "fa-brands";
-                const solidIcons = ['fa-store', 'fa-shopping-cart', 'fa-bullseye', 'fa-camera', 'fa-bolt', 'fa-check', 'fa-bag-shopping', 'fa-spa', 'fa-recycle'];
-                if (solidIcons.includes(priceObj.logo)) {
-                    iconClass = "fa-solid";
-                }
 
+            // Sort: Amazon & Flipkart first, then by price
+            const sorted = [...product.prices].sort((a, b) => {
+                const ap = (a.store==='Amazon'||a.store==='Flipkart') ? 1 : 0;
+                const bp = (b.store==='Amazon'||b.store==='Flipkart') ? 1 : 0;
+                if (ap !== bp) return bp - ap;
+                return a.price - b.price;
+            });
+
+            // Desktop: vertical stack of price rows
+            const priceRowsHTML = sorted.map(priceObj => {
+                const isLowest  = priceObj.price === lowestPriceStore.price;
+                const formatted = priceObj.price.toLocaleString('en-IN');
+                const iconClass = solidIcons.has(priceObj.logo) ? 'fa-solid' : 'fa-brands';
                 return `
                     <div class="price-row ${isLowest ? 'best-price' : ''}">
                         <div class="store-info">
@@ -747,23 +759,39 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${isLowest ? '<span class="badge">Lowest</span>' : ''}
                         </div>
                         <div class="price-action">
-                            <span class="price-amount">₹${formattedPrice}</span>
-                            <a href="${priceObj.url}" target="_blank" class="buy-btn">View Deal</a>
+                            <span class="price-amount">₹${formatted}</span>
+                            <a href="${priceObj.url}" target="_blank" rel="noopener" class="buy-btn">View Deal</a>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
 
-            // The card image is clickable, goes to the cheapest store URL
+            // Mobile ticker: horizontal scrolling strip with price pills
+            const tickerItems = [...sorted, ...sorted].map(priceObj => {
+                const isLowest  = priceObj.price === lowestPriceStore.price;
+                const formatted = priceObj.price.toLocaleString('en-IN');
+                const iconClass = solidIcons.has(priceObj.logo) ? 'fa-solid' : 'fa-brands';
+                return `
+                    <a href="${priceObj.url}" target="_blank" rel="noopener"
+                       class="price-pill ${isLowest ? 'price-pill-best' : ''}">
+                        <i class="${iconClass} ${priceObj.logo}"></i>
+                        <span class="pill-store">${priceObj.store}</span>
+                        <span class="pill-price">₹${formatted}</span>
+                        <span class="pill-btn">Buy</span>
+                    </a>`;
+            }).join('');
+
             const cheapestUrl = lowestPriceStore.url;
             card.innerHTML = `
                 <a href="${cheapestUrl}" target="_blank" rel="noopener" style="display:block;text-decoration:none;">
-                    <div class="product-image" style="background-image: url('${product.image}')"></div>
+                    <div class="product-image" style="background-image:url('${product.image}')"></div>
                 </a>
                 <div class="product-info">
                     <h3 class="product-title">${product.name}</h3>
-                    <div class="price-comparison">
-                        ${priceRows}
+                    <!-- Desktop view: vertical rows -->
+                    <div class="price-comparison desktop-prices">${priceRowsHTML}</div>
+                    <!-- Mobile view: horizontal ticker -->
+                    <div class="price-ticker mobile-prices">
+                        <div class="price-ticker-track">${tickerItems}</div>
                     </div>
                 </div>
             `;
@@ -771,3 +799,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+

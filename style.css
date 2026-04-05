@@ -792,18 +792,31 @@ body {
     100% { transform: translateX(-50%); }
 }
 
+/* Sale alert items are now <a> links */
 .sale-alert-item {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.sale-alert-item:hover {
+    background: rgba(255,255,255,0.18);
+    text-decoration: underline;
 }
 
 .sale-alert-item i { font-size: 0.9rem; }
 .sale-alert-item .platform-tag {
-    background: rgba(255,255,255,0.25);
     border-radius: 3px;
-    padding: 0.05rem 0.4rem;
-    font-size: 0.75rem;
+    padding: 0.05rem 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
 }
 
 /* ============================================================
@@ -998,7 +1011,110 @@ body {
     font-style: italic;
 }
 
+/* ============================================================
+   DESKTOP / MOBILE PRICE DISPLAY TOGGLE
+   Desktop shows vertical rows; Mobile shows horizontal ticker
+   ============================================================ */
+.desktop-prices { display: flex; flex-direction: column; gap: 0.5rem; }
+.mobile-prices  { display: none; }
+
+/* ============================================================
+   PRICE TICKER (mobile horizontal scroll — like sale alert bar)
+   ============================================================ */
+.price-ticker {
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: #f5f5f5;
+    border: 1px solid var(--border);
+}
+
+.price-ticker-track {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.45rem 0.5rem;
+    animation: priceTicker 18s linear infinite;
+    white-space: nowrap;
+}
+
+.price-ticker:hover .price-ticker-track,
+.price-ticker:focus-within .price-ticker-track {
+    animation-play-state: paused;
+}
+
+@keyframes priceTicker {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* Price pill (each store in the mobile ticker) */
+.price-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 0.7rem 0.3rem 0.55rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: box-shadow 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+}
+
+.price-pill:hover,
+.price-pill:focus {
+    border-color: var(--blue);
+    box-shadow: 0 2px 6px rgba(40,116,240,0.18);
+}
+
+.price-pill i {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.price-pill-best {
+    background: var(--success-light);
+    border-color: var(--success-border);
+}
+
+.price-pill-best i { color: var(--success); }
+
+.pill-store {
+    font-weight: 600;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pill-price {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.price-pill-best .pill-price { color: var(--success); }
+
+.pill-btn {
+    background: var(--blue);
+    color: #fff;
+    border-radius: 30px;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 0.15rem;
+}
+
+.price-pill-best .pill-btn { background: var(--success); }
+
+/* Show ticker on mobile, hide vertical rows */
 @media (max-width: 768px) {
+    .desktop-prices { display: none; }
+    .mobile-prices  { display: block; }
+
     .trending-section { padding: 1.25rem 0.75rem 0.5rem; }
     .mini-card { flex: 0 0 140px; }
     .mini-card-img { height: 120px; }
@@ -1008,5 +1124,5 @@ body {
 @media (max-width: 480px) {
     .mini-card { flex: 0 0 120px; }
     .mini-card-img { height: 100px; }
+    .pill-store { max-width: 48px; }
 }
-
