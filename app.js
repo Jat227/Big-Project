@@ -41,40 +41,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Sale Alert Ticker (all with direct sale/deals page URLs) ────────────
+    // ── Sale Alert Ticker ────────────────────────────────────────────────────
+    // Only Amazon & Flipkart shown — their deals pages are real and always live.
+    // Croma / Myntra / AJIO / Nykaa alerts require real-time API to verify
+    // live sale status; they will be re-enabled once APIs are integrated.
     const SALE_ALERTS = [
-        // Amazon
-        { icon: 'fa-bolt',    platform: 'Amazon',           color: '#ff9f00', text: 'Up to 40% OFF on Smartphones — Today Only!',      url: 'https://www.amazon.in/deals' },
-        { icon: 'fa-fire',    platform: 'Amazon',           color: '#ff9f00', text: 'Apple iPhone 15 — Limited Stock Deal!',            url: 'https://www.amazon.in/s?k=iphone+15&deals-widget=%7B%22version%22%3A1%7D' },
-        { icon: 'fa-percent', platform: 'Amazon',           color: '#ff9f00', text: 'Prime Deal: Smart TVs from ₹7,999',               url: 'https://www.amazon.in/deals?deals-widget=%7B%22version%22%3A1%2C%22browseNodeId%22%3A1389396031%7D' },
-        { icon: 'fa-tag',     platform: 'Amazon',           color: '#ff9f00', text: 'Laptops & Accessories — Extra Bank Discounts',      url: 'https://www.amazon.in/s?k=laptops&deals-widget=%7B%22version%22%3A1%7D' },
-        // Flipkart
-        { icon: 'fa-tag',     platform: 'Flipkart',         color: '#2874f0', text: 'Big Saving Days — Electronics up to 60% OFF',      url: 'https://www.flipkart.com/offers-list/big-saving-days' },
-        { icon: 'fa-percent', platform: 'Flipkart',         color: '#2874f0', text: 'Fashion Sale — Min 50% OFF on Top Brands',         url: 'https://www.flipkart.com/clothing-and-accessories' },
-        { icon: 'fa-bolt',    platform: 'Flipkart',         color: '#2874f0', text: 'Home Appliance Fest — Up to 45% OFF',              url: 'https://www.flipkart.com/offers-list/home-appliances-deals' },
-        { icon: 'fa-fire',    platform: 'Flipkart',         color: '#2874f0', text: 'Beauty Products — Up to 35% OFF',                  url: 'https://www.flipkart.com/beauty-and-personal-care' },
-        // Croma
-        { icon: 'fa-bolt',    platform: 'Croma',            color: '#01579b', text: 'Electronics Sale — Up to 30% OFF on Laptops & TVs', url: 'https://www.croma.com/offers' },
-        { icon: 'fa-percent', platform: 'Croma',            color: '#01579b', text: 'Mobiles — Best Prices + Exchange Offers',          url: 'https://www.croma.com/mobile-phones' },
-        // Reliance Digital
-        { icon: 'fa-store',   platform: 'Reliance Digital', color: '#cc0000', text: 'Weekend Sale — Smart ACs & Refrigerators on Offer', url: 'https://www.reliancedigital.in/offers' },
-        // Myntra
-        { icon: 'fa-bag-shopping', platform: 'Myntra',      color: '#ff3f6c', text: 'End of Reason Sale — Fashion up to 80% OFF',       url: 'https://www.myntra.com/myntra-big-fashion-festival' },
-        { icon: 'fa-tag',    platform: 'Myntra',            color: '#ff3f6c', text: 'Nike & Adidas — Exclusive Offers on Footwear',      url: 'https://www.myntra.com/sport-shoes' },
-        // AJIO
-        { icon: 'fa-shopping-bag', platform: 'AJIO',        color: '#e91e63', text: 'Grand Orange Sale — Up to 85% OFF on Fashion',     url: 'https://www.ajio.com/s/deal-of-the-day-8521541' },
-        { icon: 'fa-percent', platform: 'AJIO',             color: '#e91e63', text: 'Trending Styles — New Arrivals Every Day',          url: 'https://www.ajio.com/new-arrivals' },
-        // Nykaa
-        { icon: 'fa-spa',     platform: 'Nykaa',            color: '#fc2779', text: 'Nykaa Beauty Carnival — Up to 50% OFF',            url: 'https://www.nykaa.com/offers/beauty-offers' },
-        { icon: 'fa-heart',   platform: 'Nykaa',            color: '#fc2779', text: 'Skincare & Makeup — Top Brands at Best Prices',     url: 'https://www.nykaa.com/offers' },
+        { icon: 'fa-bolt',    platform: 'Amazon',   color: '#ff9f00',
+          text: 'Deals of the Day — Up to 60% OFF on Electronics',
+          url:  'https://www.amazon.in/deals' },
+        { icon: 'fa-fire',    platform: 'Amazon',   color: '#ff9f00',
+          text: "Today's Deal — Limited-time price drops on Mobiles",
+          url:  'https://www.amazon.in/deals?deals-widget=%7B%22version%22%3A1%2C%22browseNodeId%22%3A1389396031%7D' },
+        { icon: 'fa-percent', platform: 'Amazon',   color: '#ff9f00',
+          text: 'Laptops & Accessories — Extra Bank Cashback',
+          url:  'https://www.amazon.in/s?k=laptops&deals-widget=%7B%22version%22%3A1%7D' },
+        { icon: 'fa-tag',     platform: 'Amazon',   color: '#ff9f00',
+          text: 'Home & Kitchen — Up to 50% OFF on Top Brands',
+          url:  'https://www.amazon.in/deals?deals-widget=%7B%22version%22%3A1%2C%22browseNodeId%22%3A976419031%7D' },
+        { icon: 'fa-tag',     platform: 'Flipkart', color: '#2874f0',
+          text: 'Big Saving Days — Electronics deals live now',
+          url:  'https://www.flipkart.com/offers-list/electronics' },
+        { icon: 'fa-percent', platform: 'Flipkart', color: '#2874f0',
+          text: 'Fashion Sale — Min 50% OFF + Extra Coupon',
+          url:  'https://www.flipkart.com/clothing-and-accessories' },
+        { icon: 'fa-bolt',    platform: 'Flipkart', color: '#2874f0',
+          text: 'Mobile Phones — Best Prices + Exchange Offers',
+          url:  'https://www.flipkart.com/mobiles' },
+        { icon: 'fa-fire',    platform: 'Flipkart', color: '#2874f0',
+          text: 'Supercoins Zone — Earn & Redeem on Every Purchase',
+          url:  'https://www.flipkart.com/offers-list/big-saving-days' },
     ];
 
     const buildSaleAlerts = () => {
+        const bar   = document.getElementById('saleAlertBar');
         const track = document.getElementById('saleAlertTrack');
         if (!track) return;
+        // Prepend a "LIVE DEALS" label before the scrolling items
+        if (bar && !bar.querySelector('.ticker-label')) {
+            const label = document.createElement('span');
+            label.className = 'ticker-label';
+            label.innerHTML = '🔴 LIVE DEALS &nbsp;';
+            bar.insertBefore(label, bar.firstChild);
+        }
         const items = [...SALE_ALERTS, ...SALE_ALERTS]; // duplicate for seamless loop
         track.innerHTML = items.map(a => `
-            <a class="sale-alert-item" href="${a.url}" target="_blank" rel="noopener" title="Go to ${a.platform} sale">
+            <a class="sale-alert-item" href="${a.url}" target="_blank" rel="noopener" title="${a.platform} deal">
                 <i class="fa-solid ${a.icon}"></i>
                 <span class="platform-tag" style="background:${a.color}55;">${a.platform}</span>
                 ${a.text}
@@ -82,6 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     };
     buildSaleAlerts();
+
+
 
 
     // ── Trending Products (static curated — will be dynamic with real API) ──

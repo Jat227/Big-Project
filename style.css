@@ -759,7 +759,24 @@ body {
 /* ============================================================
    SALE ALERT BANNER (scrolling marquee ticker)
    ============================================================ */
+/* Static label prepended to the sale alert ticker */
+.ticker-label {
+    position: sticky;
+    left: 0;
+    background: rgba(0,0,0,0.25);
+    padding: 0 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
 .sale-alert-bar {
+
     background: linear-gradient(90deg, #ff6f00, #ff9f00, #ff6f00);
     background-size: 200% 100%;
     animation: shimmerBg 3s ease infinite;
