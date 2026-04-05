@@ -764,34 +764,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Each platform gets its own independently scrolling ticker row
             const priceTickerRows = sorted.map((priceObj, idx) => {
-                const isLowest  = !priceObj.estimated && priceObj.price === lowestPriceStore.price;
-                const formatted = priceObj.price.toLocaleString('en-IN');
-                const iconClass = solidIcons.has(priceObj.logo) ? 'fa-solid' : 'fa-brands';
-                const lowestBadge = isLowest ? '<span class="row-badge">Lowest ✓</span>' : '';
-                // Mark estimated prices clearly so users know API is pending
-                const estBadge   = priceObj.estimated ? '<span class="row-est-badge">est.</span>' : '';
-                const priceDisp  = priceObj.estimated ? `~₹${formatted}` : `₹${formatted}`;
+                const isSearchOnly = !!priceObj.search_only;
+                const isLowest     = !priceObj.estimated && !isSearchOnly && priceObj.price === lowestPriceStore.price;
+                const formatted    = priceObj.price.toLocaleString('en-IN');
+                const iconClass    = solidIcons.has(priceObj.logo) ? 'fa-solid' : 'fa-brands';
+                const lowestBadge  = isLowest ? '<span class="row-badge">Lowest ✓</span>' : '';
+                const estBadge     = priceObj.estimated ? '<span class="row-est-badge">est.</span>' : '';
+
+                // search_only rows show no price — just a "Find on Flipkart →" link
+                const priceSection = isSearchOnly
+                    ? `<span class="prt-search-label">Price may vary — click to check</span>`
+                    : `<span class="prt-sep">·</span>
+                       <span class="prt-price ${priceObj.estimated ? 'prt-price-est' : ''}">
+                           ${priceObj.estimated ? '~' : ''}₹${formatted}
+                       </span>`;
+
+                const btnLabel = isSearchOnly    ? 'Find on Flipkart →'
+                               : priceObj.estimated ? 'Check Price →'
+                               : 'View Deal →';
+                const btnClass = isSearchOnly    ? 'prt-btn prt-btn-search'
+                               : priceObj.estimated ? 'prt-btn prt-btn-est'
+                               : 'prt-btn';
+                const rowClass = isLowest        ? 'prt-row-best'
+                               : isSearchOnly    ? 'prt-row-search'
+                               : priceObj.estimated ? 'prt-row-est'
+                               : '';
 
                 const inner = `
                     <span class="prt-icon"><i class="${iconClass} ${priceObj.logo}"></i></span>
                     <span class="prt-store">${priceObj.store}</span>
                     ${lowestBadge}${estBadge}
-                    <span class="prt-sep">·</span>
-                    <span class="prt-price ${priceObj.estimated ? 'prt-price-est' : ''}">${priceDisp}</span>
-                    <a href="${priceObj.url}" target="_blank" rel="noopener" class="prt-btn ${priceObj.estimated ? 'prt-btn-est' : ''}" onclick="event.stopPropagation()">
-                        ${priceObj.estimated ? 'Check Price →' : 'View Deal →'}
-                    </a>
+                    ${priceSection}
+                    <a href="${priceObj.url}" target="_blank" rel="noopener"
+                       class="${btnClass}" onclick="event.stopPropagation()">${btnLabel}</a>
                     <span class="prt-spacer"></span>`;
 
                 const dur = 9 + (idx % 4) * 1.5;
-
                 return `
-                <div class="prt-row ${isLowest ? 'prt-row-best' : ''} ${priceObj.estimated ? 'prt-row-est' : ''}">
+                <div class="prt-row ${rowClass}">
                     <div class="prt-track" style="animation-duration:${dur}s;">
                         ${inner}${inner}
                     </div>
                 </div>`;
             }).join('');
+
 
             const cheapestUrl = lowestPriceStore.url;
             card.innerHTML = `

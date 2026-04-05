@@ -144,13 +144,16 @@ def scrape_all(query):
         amz = fa.result()
         flp = ff.result()
 
-    # ── Greedy best-match pairing: each Flipkart result used at most once ────
-    # Threshold: 0.25 for real pairing (same model, variants OK).
-    # Below threshold: Flipkart result is NOT paired — no fake link shown.
-    PAIR_THRESHOLD = 0.25
+    # ── Greedy best-match pairing ─────────────────────────────────────────────
+    # PAIR_THRESHOLD: minimum name-similarity to use a scraped Flipkart result
+    # with its real price + direct product URL.
+    # Below that: we still show Flipkart, but as a search link (no price).
+    # This ensures Flipkart always appears so the user can always click through.
+    PAIR_THRESHOLD = 0.15   # lowered; version hard-block prevents wrong pairings
     flp_used = set()
 
     def best_flp(amz_name):
+        """Return best unused Flipkart result, or None if none exceed threshold."""
         best_s, best_i, best_item = 0.0, -1, None
         for i, f in enumerate(flp):
             if i in flp_used: continue
@@ -162,21 +165,37 @@ def scrape_all(query):
             return best_item
         return None
 
+    def flipkart_search_url(name):
+        """Flipkart search URL from a simplified product name (brand + model only)."""
+        # Keep only first 4 meaningful words: e.g. 'Apple iPad A16' (no specs/colour)
+        clean = re.sub(r'\(.*?\)', '', name)                      # strip (...)
+        clean = re.sub(r'\b\d+\s*(gb|tb|mb|mp)\b', '', clean, flags=re.I)
+        clean = re.sub(r'[^a-zA-Z0-9\s]', ' ', clean)
+        words = clean.split()[:4]
+        return 'https://www.flipkart.com/search?q=' + '+'.join(words)
+
     aggregated = []
 
     # Step 1: Amazon-first products
-    for amz in amz:
-        prices = [{'store': 'Amazon', 'price': amz['price'],
-                   'logo': 'fa-amazon', 'url': amz['url']}]
-        match = best_flp(amz['name'])
+    for amz_item in amz:
+        prices = [{'store': 'Amazon', 'price': amz_item['price'],
+                   'logo': 'fa-amazon', 'url': amz_item['url']}]
+
+        match = best_flp(amz_item['name'])
         if match:
+            # Real scraped Flipkart price with direct product URL
             prices.append({'store': 'Flipkart', 'price': match['price'],
                            'logo': 'fa-store', 'url': match['url']})
-        # NOTE: Croma, Reliance, Myntra, AJIO, Nykaa are NOT added here.
-        # Their links are broken without real API access (product page URLs
-        # are not obtainable via scraping). They will be re-enabled once
-        # official affiliate/product APIs are integrated.
-        aggregated.append({'name': amz['name'], 'image': amz['image'], 'prices': prices})
+        else:
+            # No confident match scraped — show a Flipkart search link.
+            # The user can still navigate to Flipkart and find the product.
+            # 'search_only' = True tells the UI not to show a price.
+            prices.append({'store': 'Flipkart', 'price': 0,
+                           'logo': 'fa-store',
+                           'url': flipkart_search_url(amz_item['name']),
+                           'search_only': True})
+
+        aggregated.append({'name': amz_item['name'], 'image': amz_item['image'], 'prices': prices})
 
     # Step 2: Unmatched Flipkart products (standalone cards)
     for i, f in enumerate(flp):
@@ -184,6 +203,7 @@ def scrape_all(query):
         aggregated.append({'name': f['name'], 'image': f['image'],
                            'prices': [{'store': 'Flipkart', 'price': f['price'],
                                        'logo': 'fa-store', 'url': f['url']}]})
+
 
     # Fallback
     if not aggregated:

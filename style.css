@@ -1191,6 +1191,28 @@ body {
 }
 .prt-btn-est:hover { background: #757575 !important; }
 
+/* Search-only Flipkart rows (no scraped price available — shows search link) */
+.prt-row-search {
+    background: #e8f0fe;
+    border-color: #c5d8ff;
+}
+.prt-row-search::after { background: linear-gradient(to right, transparent, #e8f0fe 90%); }
+
+.prt-search-label {
+    font-size: 0.72rem;
+    font-style: italic;
+    color: #5c7cfa;
+    padding-right: 0.4rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.prt-btn-search {
+    background: #2874f0 !important;
+    font-size: 0.73rem;
+}
+.prt-btn-search:hover { background: #1a5ecf !important; }
+
 /* Invisible spacer so the looping pause feels right */
 .prt-spacer { display: inline-block; width: 3rem; flex-shrink: 0; }
 
