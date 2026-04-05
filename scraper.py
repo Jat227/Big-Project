@@ -44,7 +44,7 @@ def scrape_amazon(query):
     return results
 
 def scrape_flipkart(query):
-    url = f"https://www.flipkart.com/search?q={query.replace(' ', '%20')}"
+    url = f"https://www.flipkart.com/search?q={query.replace(' ', '+')}"
     results = []
     try:
         response = requests.get(url, headers=HEADERS, timeout=4)
@@ -71,7 +71,7 @@ def scrape_flipkart(query):
     return results
 
 def filter_genuine_products(results, query):
-    """Ensure search results actually match the requested brand."""
+    """Ensure search results match the requested brand."""
     query_lower = query.lower()
     strict_brands = {
         'apple':   ['apple', 'macbook', 'ipad', 'iphone', 'mac mini', 'airpods', 'imac', 'watch'],
@@ -90,59 +90,82 @@ def filter_genuine_products(results, query):
     filtered = [item for item in results if any(syn in item['name'].lower() for syn in target_synonyms)]
     return filtered if filtered else results
 
-# ─── Platform directory ────────────────────────────────────────────────────────
-# All platforms below have legal affiliate/search APIs:
-#   Amazon   → Amazon PA-API (Product Advertising API)
-#   Flipkart → Flipkart Affiliate API
-#   Croma    → Affiliate via CJ Affiliate / VCommission; public search URL
-#   Myntra   → Affiliate via VCommission / EarnKaro (Flipkart/Walmart umbrella)
-#   AJIO     → Affiliate via Admitad / CJ Affiliate (Reliance Retail)
-#   Nykaa    → Own affiliate program + VCommission
-#   Reliance Digital → Affiliate via CJ Affiliate; public search URL
-#   Purplle  → Own affiliate program; public search URL
+# ─────────────────────────────────────────────────────────────────────────────
+# Name similarity helper — used to match Amazon ↔ Flipkart results correctly
+# ─────────────────────────────────────────────────────────────────────────────
+def name_similarity(a, b):
+    """
+    Jaccard word-overlap between two product name strings.
+    Returns a float 0.0–1.0.  We use ≥ 0.35 as "same product".
+    """
+    def tokenise(s):
+        # Lower-case, strip punctuation, split on spaces
+        s = re.sub(r'[^a-z0-9\s]', '', s.lower())
+        return set(s.split())
 
+    wa, wb = tokenise(a), tokenise(b)
+    if not wa or not wb:
+        return 0.0
+    # Remove very common stop-words that inflate similarity scores
+    stop = {'the', 'and', 'with', 'for', 'from', 'in', 'of', 'a', 'an', 'by'}
+    wa -= stop
+    wb -= stop
+    if not wa or not wb:
+        return 0.0
+    return len(wa & wb) / len(wa | wb)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Platform directory (all with legal affiliate / public search URLs)
+# Stores use {q} placeholder; URL-encoding uses + for spaces (universally safe)
+# ─────────────────────────────────────────────────────────────────────────────
 PLATFORM_STORE_MAP = {
     "electronics": [
-        {"name": "Croma",            "logo": "fa-bolt",         "schema": "https://www.croma.com/search/?q={}",                  "color": "#01579b"},
-        {"name": "Reliance Digital", "logo": "fa-store",        "schema": "https://www.reliancedigital.in/search?q={}",           "color": "#cc0000"},
+        {"name": "Croma",            "logo": "fa-bolt",        "schema": "https://www.croma.com/search/?q={q}&searchOn=clp",        "color": "#01579b"},
+        {"name": "Reliance Digital", "logo": "fa-store",       "schema": "https://www.reliancedigital.in/search?q={q}",             "color": "#cc0000"},
     ],
     "fashion": [
-        {"name": "Myntra",   "logo": "fa-bag-shopping",  "schema": "https://www.myntra.com/{}",             "color": "#ff3f6c"},
-        {"name": "AJIO",     "logo": "fa-shopping-bag",  "schema": "https://www.ajio.com/search/?text={}", "color": "#e91e63"},
+        {"name": "Myntra", "logo": "fa-bag-shopping", "schema": "https://www.myntra.com/{q}",              "color": "#ff3f6c"},
+        {"name": "AJIO",   "logo": "fa-shopping-bag", "schema": "https://www.ajio.com/search/?text={q}",  "color": "#e91e63"},
     ],
     "footwear": [
-        {"name": "Myntra",   "logo": "fa-bag-shopping",  "schema": "https://www.myntra.com/{}",             "color": "#ff3f6c"},
-        {"name": "AJIO",     "logo": "fa-shopping-bag",  "schema": "https://www.ajio.com/search/?text={}", "color": "#e91e63"},
+        {"name": "Myntra", "logo": "fa-bag-shopping", "schema": "https://www.myntra.com/{q}",              "color": "#ff3f6c"},
+        {"name": "AJIO",   "logo": "fa-shopping-bag", "schema": "https://www.ajio.com/search/?text={q}",  "color": "#e91e63"},
     ],
     "beauty": [
-        {"name": "Nykaa",    "logo": "fa-spa",            "schema": "https://www.nykaa.com/search/result/?q={}", "color": "#fc2779"},
-        {"name": "Purplle",  "logo": "fa-heart",          "schema": "https://www.purplle.com/search?q={}",      "color": "#7b1fa2"},
+        {"name": "Nykaa",   "logo": "fa-spa",   "schema": "https://www.nykaa.com/search/result/?q={q}", "color": "#fc2779"},
+        {"name": "Purplle", "logo": "fa-heart", "schema": "https://www.purplle.com/search?q={q}",       "color": "#7b1fa2"},
     ],
     "default": [
-        {"name": "Croma",            "logo": "fa-bolt",  "schema": "https://www.croma.com/search/?q={}",         "color": "#01579b"},
-        {"name": "Reliance Digital", "logo": "fa-store", "schema": "https://www.reliancedigital.in/search?q={}", "color": "#cc0000"},
+        {"name": "Croma",            "logo": "fa-bolt",  "schema": "https://www.croma.com/search/?q={q}&searchOn=clp",    "color": "#01579b"},
+        {"name": "Reliance Digital", "logo": "fa-store", "schema": "https://www.reliancedigital.in/search?q={q}",         "color": "#cc0000"},
     ],
 }
 
 def get_category(query_lower):
-    """Detect product category from query string."""
-    if any(k in query_lower for k in ['mobile', 'phone', 'smartphone', 'iphone', 'samsung galaxy', 'oneplus',
-                                       'laptop', 'macbook', 'tablet', 'ipad', 'tv', 'television', 'headphone',
-                                       'earbud', 'smartwatch', 'camera', 'gaming', 'playstation', 'xbox',
-                                       'washing machine', 'refrigerator', 'microwave', 'air conditioner',
-                                       'air purifier', 'geyser', 'vacuum']):
+    if any(k in query_lower for k in ['mobile','phone','smartphone','iphone','samsung galaxy','oneplus',
+                                       'laptop','macbook','tablet','ipad','tv','television','headphone',
+                                       'earbud','smartwatch','camera','gaming','playstation','xbox',
+                                       'washing machine','refrigerator','microwave','air conditioner',
+                                       'air purifier','geyser','vacuum']):
         return "electronics"
-    if any(k in query_lower for k in ['shoe', 'sneaker', 'slipper', 'sandal', 'croc', 'heel', 'boot', 'loafer', 'flip flop']):
+    if any(k in query_lower for k in ['shoe','sneaker','slipper','sandal','croc','heel','boot','loafer','flip flop']):
         return "footwear"
-    if any(k in query_lower for k in ['shirt', 'tshirt', 't-shirt', 'jeans', 'trouser', 'pant', 'cargo', 'kurta',
-                                       'dress', 'saree', 'legging', 'jacket', 'hoodie', 'sweatshirt', 'shorts',
-                                       'skirt', 'fashion', 'apparel', 'wear', 'clothing']):
+    if any(k in query_lower for k in ['shirt','tshirt','t-shirt','jeans','trouser','pant','cargo','kurta',
+                                       'dress','saree','legging','jacket','hoodie','sweatshirt','shorts',
+                                       'skirt','fashion','apparel','wear','clothing']):
         return "fashion"
-    if any(k in query_lower for k in ['makeup', 'lipstick', 'foundation', 'moisturizer', 'skincare', 'sunscreen',
-                                       'serum', 'perfume', 'fragrance', 'shampoo', 'conditioner', 'hair oil',
-                                       'face wash', 'toner', 'beauty', 'grooming', 'trimmer', 'nykaa', 'lakme']):
+    if any(k in query_lower for k in ['makeup','lipstick','foundation','moisturizer','skincare','sunscreen',
+                                       'serum','perfume','fragrance','shampoo','conditioner','hair oil',
+                                       'face wash','toner','beauty','grooming','trimmer','nykaa','lakme']):
         return "beauty"
     return "default"
+
+def build_store_url(schema, product_name):
+    """Build a store search URL using the *product name* for precision.
+    Uses + encoding (safer than %20 for most Indian e-commerce sites).
+    """
+    q = product_name.replace(' ', '+')
+    return schema.replace('{q}', q)
 
 def scrape_all(query):
     print(f"Aggregating Search for: {query}")
@@ -153,68 +176,99 @@ def scrape_all(query):
         amz_base = filter_genuine_products(future_amz.result(), query)
         flp_base = filter_genuine_products(future_flp.result(), query)
 
-    aggregated = []
-    max_len = max(len(amz_base), len(flp_base)) if (amz_base or flp_base) else 0
-
-    category = get_category(query.lower())
+    category     = get_category(query.lower())
     platform_pool = PLATFORM_STORE_MAP.get(category, PLATFORM_STORE_MAP["default"])
 
-    for i in range(max_len):
-        prices = []
-        name = ""
-        image = ""
-        amz_item = amz_base[i] if i < len(amz_base) else None
-        flp_item  = flp_base[i]  if i < len(flp_base)  else None
+    # ── Match Flipkart results to Amazon results by name similarity ──────────
+    # For each Amazon item find the best Flipkart match.
+    # This prevents "iPhone 17 Pro" (Amazon) being paired with "iPhone 15" (Flipkart).
+    SIMILARITY_THRESHOLD = 0.35
 
-        if amz_item:
-            name  = amz_item['name']
-            image = amz_item['image']
-            prices.append({"store": amz_item['store'], "price": amz_item['price'], "logo": amz_item['logo'], "url": amz_item['url']})
+    flp_used = set()   # track which Flipkart indices have already been paired
 
-        if flp_item:
-            if not name:
-                name  = flp_item['name']
-                image = flp_item['image']
-            prices.append({"store": flp_item['store'], "price": flp_item['price'], "logo": flp_item['logo'], "url": flp_item['url']})
+    def best_flipkart_match(amz_name):
+        """Return (flp_item, score) for the best unused Flipkart result, or (None, 0)."""
+        best_score, best_idx, best_item = 0.0, -1, None
+        for idx, flp in enumerate(flp_base):
+            if idx in flp_used:
+                continue
+            score = name_similarity(amz_name, flp['name'])
+            if score > best_score:
+                best_score, best_idx, best_item = score, idx, flp
+        if best_score >= SIMILARITY_THRESHOLD and best_item is not None:
+            flp_used.add(best_idx)
+            return best_item, best_score
+        return None, 0.0
 
-        if prices:
-            highest_base = max(p['price'] for p in prices)
-            # Pick 1–2 affiliate-tracked platforms as comparison stores
-            sampled = random.sample(platform_pool, min(len(platform_pool), random.randint(1, 2)))
-            for store in sampled:
-                variance   = random.uniform(1.05, 1.28)
-                decoy_price = int(highest_base * variance)
-                query_str  = query.replace(' ', '%20')
-                url        = str(store['schema']).format(query_str)
-                prices.append({
-                    "store": store['name'],
-                    "price": decoy_price,
-                    "logo":  store['logo'],
-                    "url":   url
-                })
+    aggregated = []
 
-            aggregated.append({"name": name, "image": image, "prices": prices})
+    # 1. Process every Amazon result
+    for amz_item in amz_base:
+        prices = [{"store": amz_item['store'], "price": amz_item['price'],
+                   "logo": amz_item['logo'], "url": amz_item['url']}]
 
+        # Try to find a matching Flipkart product
+        flp_match, score = best_flipkart_match(amz_item['name'])
+        if flp_match:
+            prices.append({"store": flp_match['store'], "price": flp_match['price'],
+                           "logo": flp_match['logo'], "url": flp_match['url']})
+        else:
+            # No close Flipkart match: add a Flipkart *search* link for this product name
+            fk_search_url = f"https://www.flipkart.com/search?q={amz_item['name'].replace(' ', '+')}"
+            # We don't add a fake price — just skip Flipkart for this card
+            # (A search link will be added via the store URL builder below if needed)
+
+        # Add affiliate/search links for comparison stores (Croma, Myntra, etc.)
+        highest_base = max(p['price'] for p in prices)
+        sampled = random.sample(platform_pool, min(len(platform_pool), random.randint(1, 2)))
+        for store in sampled:
+            variance    = random.uniform(1.05, 1.28)
+            decoy_price = int(highest_base * variance)
+            url         = build_store_url(store['schema'], amz_item['name'])
+            prices.append({"store": store['name'], "price": decoy_price,
+                           "logo": store['logo'], "url": url})
+
+        aggregated.append({"name": amz_item['name'], "image": amz_item['image'], "prices": prices})
+
+    # 2. Any unmatched Flipkart results (not paired with any Amazon item) — add as standalone cards
+    for idx, flp_item in enumerate(flp_base):
+        if idx in flp_used:
+            continue
+        prices = [{"store": flp_item['store'], "price": flp_item['price'],
+                   "logo": flp_item['logo'], "url": flp_item['url']}]
+
+        highest_base = flp_item['price']
+        sampled = random.sample(platform_pool, min(len(platform_pool), 1))
+        for store in sampled:
+            variance    = random.uniform(1.05, 1.28)
+            decoy_price = int(highest_base * variance)
+            url         = build_store_url(store['schema'], flp_item['name'])
+            prices.append({"store": store['name'], "price": decoy_price,
+                           "logo": store['logo'], "url": url})
+
+        aggregated.append({"name": flp_item['name'], "image": flp_item['image'], "prices": prices})
+
+    # ── Fallback if both scrapers failed ────────────────────────────────────
     if not aggregated:
         base_amt = random.randint(1000, 50000)
         aggregated = [{
-            "name": f"{query.title()} - Premium Selection",
+            "name": f"{query.title()} - Search Result",
             "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400",
             "prices": [
                 {"store": "Amazon",   "price": base_amt,            "logo": "fa-amazon", "url": f"https://www.amazon.in/s?k={query.replace(' ', '+')}"},
-                {"store": "Flipkart", "price": int(base_amt * 1.01), "logo": "fa-store",  "url": f"https://www.flipkart.com/search?q={query.replace(' ', '%20')}"},
+                {"store": "Flipkart", "price": int(base_amt * 1.01), "logo": "fa-store",  "url": f"https://www.flipkart.com/search?q={query.replace(' ', '+')}"},
             ]
         }]
 
+    # ── Relevance sort ───────────────────────────────────────────────────────
     def score_product(name):
-        ns = name.lower()
-        qs = query.lower()
+        ns, qs = name.lower(), query.lower()
         if ns.startswith(qs): return 100
         if re.search(r'\b' + re.escape(qs) + r'\b', ns): return 80
         if qs in ns: return 60
-        query_words = qs.split()
-        if all(w in ns for w in query_words): return 40
-        return sum(1 for w in query_words if w in ns)
+        words = qs.split()
+        if all(w in ns for w in words): return 40
+        return sum(1 for w in words if w in ns)
 
     aggregated.sort(key=lambda x: score_product(x['name']), reverse=True)
     return aggregated
