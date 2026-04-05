@@ -161,10 +161,10 @@ body {
    ============================================================ */
 .top-categories {
     background: var(--bg-header);
-    padding: 0 2rem 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    padding: 0 2rem 0;
+    /* DO NOT use overflow-x:auto here — it clips the dropdown */
+    position: relative;
+    z-index: 250;
 }
 
 .top-categories::-webkit-scrollbar { display: none; }
@@ -174,8 +174,13 @@ body {
     display: flex;
     gap: 0.25rem;
     white-space: nowrap;
-    padding-bottom: 2px;
+    padding-bottom: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
+
+.cat-list-horizontal::-webkit-scrollbar { display: none; }
 
 .cat-item-container { position: relative; }
 
@@ -205,23 +210,21 @@ body {
     border-radius: 0;
 }
 
-/* Sub-category dropdown */
+/* Sub-category dropdown — must be outside overflow:hidden/auto parents */
 .sub-cat-list {
     list-style: none;
-    position: absolute;
-    top: 110%;
-    left: 0;
+    position: fixed;         /* fixed so it escapes any overflow clip */
     background: var(--bg-white);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 0.4rem 0;
     min-width: 210px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
-    transform: translateY(8px);
-    z-index: 300;
+    transform: translateY(6px);
+    z-index: 9999;           /* always on top */
 }
 
 .sub-cat-list::before {
@@ -752,3 +755,258 @@ body {
 
     .product-image { height: 130px; }
 }
+
+/* ============================================================
+   SALE ALERT BANNER (scrolling marquee ticker)
+   ============================================================ */
+.sale-alert-bar {
+    background: linear-gradient(90deg, #ff6f00, #ff9f00, #ff6f00);
+    background-size: 200% 100%;
+    animation: shimmerBg 3s ease infinite;
+    overflow: hidden;
+    padding: 0.45rem 0;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    position: relative;
+    z-index: 190;
+}
+
+@keyframes shimmerBg {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.sale-alert-track {
+    display: inline-flex;
+    gap: 4rem;
+    animation: tickerScroll 35s linear infinite;
+}
+
+.sale-alert-track:hover { animation-play-state: paused; }
+
+@keyframes tickerScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.sale-alert-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.sale-alert-item i { font-size: 0.9rem; }
+.sale-alert-item .platform-tag {
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    padding: 0.05rem 0.4rem;
+    font-size: 0.75rem;
+}
+
+/* ============================================================
+   SUPPORT / NEW WEBSITE NOTICE
+   ============================================================ */
+.support-notice {
+    background: linear-gradient(135deg, #e8f0fe, #fce8ff);
+    border: 1px solid #c5d8ff;
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.5rem;
+    margin: 1.25rem 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.support-notice::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #2874f0, #a855f7);
+}
+
+.support-notice-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.support-notice-text h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 0.2rem;
+}
+
+.support-notice-text p {
+    font-size: 0.82rem;
+    color: #555;
+    line-height: 1.45;
+}
+
+.support-notice-close {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+/* ============================================================
+   TRENDING SECTIONS (Landing page)
+   ============================================================ */
+.landing-page {
+    padding: 0 0 3rem;
+}
+
+.trending-section {
+    padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.trending-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.trending-section-header h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.trending-section-header h2 i { color: var(--blue); }
+
+.trending-section-header a {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--blue);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+}
+
+.trending-section-header a:hover { text-decoration: underline; }
+
+/* Horizontal scroll row */
+.trending-row {
+    display: flex;
+    gap: 0.85rem;
+    overflow-x: auto;
+    padding-bottom: 0.75rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.trending-row::-webkit-scrollbar { height: 4px; }
+.trending-row::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Mini product card (trending) */
+.mini-card {
+    flex: 0 0 160px;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    scroll-snap-align: start;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.mini-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.mini-card-img {
+    height: 140px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #fafafa;
+    border-bottom: 1px solid var(--border);
+}
+
+.mini-card-info {
+    padding: 0.6rem 0.65rem 0.75rem;
+}
+
+.mini-card-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0.35rem;
+}
+
+.mini-card-price {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.mini-card-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    background: #fff3e0;
+    color: #e65100;
+    border-radius: 3px;
+    padding: 0.08rem 0.35rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+}
+
+.mini-card-stores {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+/* "Powered by API" note on sale bar */
+.api-note {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .trending-section { padding: 1.25rem 0.75rem 0.5rem; }
+    .mini-card { flex: 0 0 140px; }
+    .mini-card-img { height: 120px; }
+    .support-notice { margin: 1rem 0.75rem 0; flex-wrap: wrap; gap: 0.6rem; }
+}
+
+@media (max-width: 480px) {
+    .mini-card { flex: 0 0 120px; }
+    .mini-card-img { height: 100px; }
+}
+

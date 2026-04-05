@@ -15,79 +15,105 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div id="app">
-        <!-- ===== HEADER (sticky, Amazon/Flipkart style) ===== -->
-        <header class="hero">
-            <div class="header-nav">
-                <!-- Logo -->
-                <div class="logo">
-                    <i class="fa-solid fa-tags"></i> PriceFinder
-                </div>
+<div id="app">
 
-                <!-- Search bar (visible in header) -->
-                <div class="header-search" id="headerSearch">
-                    <input type="text" id="searchInput" placeholder="Search for products, brands and more…" autocomplete="off">
-                    <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> <span>Search</span></button>
-                </div>
+    <!-- ===== SALE ALERT TICKER (always visible) ===== -->
+    <div class="sale-alert-bar" id="saleAlertBar">
+        <div class="sale-alert-track" id="saleAlertTrack">
+            <!-- Duplicated for seamless loop — populated by JS -->
+        </div>
+    </div>
+
+    <!-- ===== HEADER (sticky, Amazon/Flipkart style) ===== -->
+    <header class="hero">
+        <div class="header-nav">
+            <!-- Logo -->
+            <div class="logo">
+                <i class="fa-solid fa-tags"></i> PriceFinder
             </div>
+            <!-- Search bar (visible in header) -->
+            <div class="header-search" id="headerSearch">
+                <input type="text" id="searchInput" placeholder="Search for products, brands and more…" autocomplete="off">
+                <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> <span>Search</span></button>
+            </div>
+        </div>
 
-            <!-- Category nav -->
-            <nav class="top-categories">
-                <ul id="categoryList" class="cat-list-horizontal">
-                    <!-- Populated by JS -->
-                </ul>
-            </nav>
-        </header>
+        <!-- Category nav -->
+        <nav class="top-categories">
+            <ul id="categoryList" class="cat-list-horizontal">
+                <!-- Populated by JS -->
+            </ul>
+        </nav>
+    </header>
 
-        <!-- ===== HERO LANDING (shown before first search) ===== -->
-        <section id="heroLanding" class="hero-landing">
+    <!-- ===== LANDING PAGE (shown before first search) ===== -->
+    <div id="landingPage" class="landing-page">
+
+        <!-- Hero banner -->
+        <section class="hero-landing">
             <h1 class="hero-title">Find the <span>Lowest Price</span> Instantly</h1>
             <p class="hero-subtitle">Compare across Amazon &amp; Flipkart &mdash; brand-new, first-hand products only.</p>
         </section>
 
-        <!-- ===== MAIN LAYOUT (sidebar + content, shown after search) ===== -->
-        <div id="mainLayout" class="layout-container hidden">
-
-            <!-- Sidebar overlay (mobile backdrop) -->
-            <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-            <!-- Sidebar -->
-            <aside id="sidebar" class="sidebar">
-                <div id="filterBlock" class="sidebar-block">
-                    <h3>Filter Results</h3>
-                    <div id="filtersContainer">
-                        <!-- dynamic filters -->
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Content -->
-            <div class="content-wrapper">
-                <!-- Mobile filter toggle -->
-                <button class="filter-toggle-btn" id="filterToggleBtn">
-                    <i class="fa-solid fa-sliders"></i> Filters
-                </button>
-
-                <!-- Loading State -->
-                <div id="loadingState" class="hidden">
-                    <div class="loader"></div>
-                    <p>Scanning platforms for the best deals…</p>
-                </div>
-
-                <!-- Results Section -->
-                <main id="resultsContainer" class="hidden">
-                    <div class="results-header">
-                        <h2>Showing results for <span id="queryText" class="highlight">"iPhone"</span></h2>
-                    </div>
-                    <div id="productGrid" class="product-grid">
-                        <!-- Product Cards injected by JS -->
-                    </div>
-                </main>
+        <!-- Support / New Website Notice -->
+        <div class="support-notice" id="supportNotice">
+            <div class="support-notice-icon">🚀</div>
+            <div class="support-notice-text">
+                <h4>We're a brand-new platform &mdash; and we need your support!</h4>
+                <p>PriceFinder is just getting started. You may notice some slowness as we scale up our price-fetching engine. Your patience means the world to us. With your support, we'll grow into one of India's biggest price comparison platforms &mdash; saving you money every day! ❤️</p>
             </div>
+            <button class="support-notice-close" id="supportNoticeClose" title="Dismiss">✕</button>
+        </div>
+
+        <!-- Trending Sections (per category) — populated by JS -->
+        <div id="trendingSections"></div>
+
+    </div>
+
+    <!-- ===== MAIN LAYOUT (sidebar + content, shown after search) ===== -->
+    <div id="mainLayout" class="layout-container hidden">
+
+        <!-- Sidebar overlay (mobile backdrop) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div id="filterBlock" class="sidebar-block">
+                <h3>Filter Results</h3>
+                <div id="filtersContainer">
+                    <!-- dynamic filters -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="content-wrapper">
+            <!-- Mobile filter toggle -->
+            <button class="filter-toggle-btn" id="filterToggleBtn">
+                <i class="fa-solid fa-sliders"></i> Filters
+            </button>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden">
+                <div class="loader"></div>
+                <p>Scanning platforms for the best deals…</p>
+            </div>
+
+            <!-- Results Section -->
+            <main id="resultsContainer" class="hidden">
+                <div class="results-header">
+                    <h2>Showing results for <span id="queryText" class="highlight">"iPhone"</span></h2>
+                </div>
+                <div id="productGrid" class="product-grid">
+                    <!-- Product Cards injected by JS -->
+                </div>
+            </main>
         </div>
     </div>
 
-    <!-- Custom JS -->
-    <script src="/static/app.js?v=6"></script>
+</div>
+
+<!-- Custom JS -->
+<script src="/static/app.js?v=7"></script>
 </body>
 </html>

@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const loadingState = document.getElementById('loadingState');
+    const searchBtn   = document.getElementById('searchBtn');
+    const loadingState    = document.getElementById('loadingState');
     const resultsContainer = document.getElementById('resultsContainer');
-    const queryText = document.getElementById('queryText');
+    const queryText   = document.getElementById('queryText');
     const productGrid = document.getElementById('productGrid');
-    const heroLanding = document.getElementById('heroLanding');
+    const landingPage = document.getElementById('landingPage');
 
-    const categoryList = document.getElementById('categoryList');
+    const categoryList    = document.getElementById('categoryList');
     const filtersContainer = document.getElementById('filtersContainer');
-    const mainLayout = document.getElementById('mainLayout');
+    const mainLayout      = document.getElementById('mainLayout');
 
     // Mobile sidebar toggle
-    const sidebar = document.getElementById('sidebar');
+    const sidebar        = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const filterToggleBtn = document.getElementById('filterToggleBtn');
 
@@ -28,6 +28,160 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebarOverlay.classList.remove('active');
         });
     }
+
+    // ── Support notice dismiss ──────────────────────────────────────────────
+    const supportNotice = document.getElementById('supportNotice');
+    const supportClose  = document.getElementById('supportNoticeClose');
+    if (supportClose && supportNotice) {
+        // Restore dismissed state from session
+        if (sessionStorage.getItem('supportDismissed')) supportNotice.style.display = 'none';
+        supportClose.addEventListener('click', () => {
+            supportNotice.style.display = 'none';
+            sessionStorage.setItem('supportDismissed', '1');
+        });
+    }
+
+    // ── Sale Alert Ticker ───────────────────────────────────────────────────
+    const SALE_ALERTS = [
+        { icon: 'fa-bolt',         platform: 'Amazon',   text: 'Up to 40% OFF on Smartphones!' },
+        { icon: 'fa-tag',          platform: 'Flipkart', text: 'Big Saving Days — Electronics up to 60% OFF' },
+        { icon: 'fa-fire',         platform: 'Amazon',   text: 'Today\'s Deal: Apple iPhone 15 — Limited Stock' },
+        { icon: 'fa-percent',      platform: 'Flipkart', text: 'Fashion Sale — Min 50% OFF on Top Brands' },
+        { icon: 'fa-bolt',         platform: 'Amazon',   text: 'Prime Deal: Smart TVs from ₹7,999' },
+        { icon: 'fa-tag',          platform: 'Flipkart', text: 'Laptops & Accessories — Extra 10% Bank Offer' },
+        { icon: 'fa-fire',         platform: 'Amazon',   text: 'Beauty & Grooming — Up to 35% OFF' },
+        { icon: 'fa-percent',      platform: 'Flipkart', text: 'Home Appliances Fest — Discounts up to 45%' },
+    ];
+
+    const buildSaleAlerts = () => {
+        const track = document.getElementById('saleAlertTrack');
+        if (!track) return;
+        // Duplicate for seamless loop
+        const items = [...SALE_ALERTS, ...SALE_ALERTS];
+        track.innerHTML = items.map(a => `
+            <span class="sale-alert-item">
+                <i class="fa-solid ${a.icon}"></i>
+                <span class="platform-tag">${a.platform}</span>
+                ${a.text}
+            </span>
+        `).join('');
+    };
+    buildSaleAlerts();
+
+    // ── Trending Products (static curated — will be dynamic with real API) ──
+    const TRENDING_DATA = [
+        {
+            name: '📱 Trending Mobiles',
+            icon: 'fa-mobile-screen',
+            search: 'Smartphones',
+            products: [
+                { name: 'Apple iPhone 15 128GB', price: '₹69,999', badge: 'Best Seller', img: 'https://m.media-amazon.com/images/I/61bK6PMOC3L._AC_SY450_.jpg', url: "/api/search?q=iPhone+15" },
+                { name: 'Samsung Galaxy S24 256GB', price: '₹74,999', badge: 'Trending', img: 'https://m.media-amazon.com/images/I/71Sa3dqTqzL._AC_SY450_.jpg', url: "/api/search?q=Samsung+Galaxy+S24" },
+                { name: 'OnePlus 12 256GB', price: '₹64,999', badge: 'Hot Deal', img: 'https://m.media-amazon.com/images/I/71RrMLGTtBL._AC_SY450_.jpg', url: "/api/search?q=OnePlus+12" },
+                { name: 'Xiaomi Redmi Note 13 Pro', price: '₹24,999', badge: 'Value Pick', img: 'https://m.media-amazon.com/images/I/61bK6PMOC3L._AC_SY450_.jpg', url: "/api/search?q=Redmi+Note+13+Pro" },
+                { name: 'Google Pixel 8a', price: '₹52,999', badge: 'New Launch', img: 'https://m.media-amazon.com/images/I/71Sa3dqTqzL._AC_SY450_.jpg', url: "/api/search?q=Google+Pixel+8a" },
+                { name: 'Vivo V30 Pro 256GB', price: '₹39,999', badge: 'Popular', img: 'https://m.media-amazon.com/images/I/71RrMLGTtBL._AC_SY450_.jpg', url: "/api/search?q=Vivo+V30+Pro" },
+            ]
+        },
+        {
+            name: '💻 Top Electronics',
+            icon: 'fa-laptop',
+            search: 'Laptops',
+            products: [
+                { name: 'Apple MacBook Air M2 13"', price: '₹1,09,900', badge: 'Best Seller', img: 'https://m.media-amazon.com/images/I/71f5Eu5lJSL._AC_SY450_.jpg', url: "/api/search?q=MacBook+Air+M2" },
+                { name: 'Sony WH-1000XM5 Headphones', price: '₹26,990', badge: 'Editor\'s Choice', img: 'https://m.media-amazon.com/images/I/61Lh0sRzerL._AC_SY450_.jpg', url: "/api/search?q=Sony+WH1000XM5" },
+                { name: 'Samsung 65" 4K Smart TV', price: '₹69,990', badge: 'Trending', img: 'https://m.media-amazon.com/images/I/71f5Eu5lJSL._AC_SY450_.jpg', url: "/api/search?q=Samsung+65+4K+TV" },
+                { name: 'HP Pavilion 15 Core i5', price: '₹54,999', badge: 'Popular', img: 'https://m.media-amazon.com/images/I/61Lh0sRzerL._AC_SY450_.jpg', url: "/api/search?q=HP+Pavilion+15" },
+                { name: 'Apple Watch Series 9', price: '₹41,900', badge: 'Hot Pick', img: 'https://m.media-amazon.com/images/I/71f5Eu5lJSL._AC_SY450_.jpg', url: "/api/search?q=Apple+Watch+Series+9" },
+                { name: 'Canon EOS R50 Camera', price: '₹65,995', badge: 'New', img: 'https://m.media-amazon.com/images/I/61Lh0sRzerL._AC_SY450_.jpg', url: "/api/search?q=Canon+EOS+R50" },
+            ]
+        },
+        {
+            name: '👟 Fashion & Footwear',
+            icon: 'fa-shirt',
+            search: 'Fashion Clothing',
+            products: [
+                { name: 'Nike Air Max 270', price: '₹9,595', badge: 'Best Seller', img: 'https://m.media-amazon.com/images/I/71Ix-A5KVXL._AC_UX695_.jpg', url: "/api/search?q=Nike+Air+Max+270" },
+                { name: 'Adidas Ultraboost 22', price: '₹14,999', badge: 'Trending', img: 'https://m.media-amazon.com/images/I/71Ix-A5KVXL._AC_UX695_.jpg', url: "/api/search?q=Adidas+Ultraboost+22" },
+                { name: 'Levi\'s 511 Slim Fit Jeans', price: '₹2,999', badge: 'Popular', img: 'https://m.media-amazon.com/images/I/71Ix-A5KVXL._AC_UX695_.jpg', url: "/api/search?q=Levis+511+Jeans" },
+                { name: 'Puma Men\'s Sports T-Shirt', price: '₹799', badge: 'Value', img: 'https://m.media-amazon.com/images/I/71Ix-A5KVXL._AC_UX695_.jpg', url: "/api/search?q=Puma+Sports+Tshirt" },
+                { name: 'H&M Women\'s Floral Dress', price: '₹1,499', badge: 'Trending', img: 'https://m.media-amazon.com/images/I/71Ix-A5KVXL._AC_UX695_.jpg', url: "/api/search?q=HM+Floral+Dress" },
+                { name: 'Crocs Classic Clog', price: '₹3,399', badge: 'Hot', img: 'https://m.media-amazon.com/images/I/71Ix-A5KVXL._AC_UX695_.jpg', url: "/api/search?q=Crocs+Classic+Clog" },
+            ]
+        },
+        {
+            name: '🛒 Home Appliances',
+            icon: 'fa-blender',
+            search: 'Home Appliances',
+            products: [
+                { name: 'LG 260L 3-Star Refrigerator', price: '₹29,990', badge: 'Best Seller', img: 'https://m.media-amazon.com/images/I/51c1O9XTSJL._AC_SY450_.jpg', url: "/api/search?q=LG+260L+Refrigerator" },
+                { name: 'Samsung 7kg Washing Machine', price: '₹22,490', badge: 'Popular', img: 'https://m.media-amazon.com/images/I/51c1O9XTSJL._AC_SY450_.jpg', url: "/api/search?q=Samsung+7kg+Washing+Machine" },
+                { name: 'Daikin 1.5 Ton 5-Star AC', price: '₹44,990', badge: 'Top Rated', img: 'https://m.media-amazon.com/images/I/51c1O9XTSJL._AC_SY450_.jpg', url: "/api/search?q=Daikin+1.5+Ton+AC" },
+                { name: 'IFB 25L Microwave Oven', price: '₹9,490', badge: 'Trending', img: 'https://m.media-amazon.com/images/I/51c1O9XTSJL._AC_SY450_.jpg', url: "/api/search?q=IFB+Microwave+Oven" },
+                { name: 'Dyson V15 Detect Vacuum', price: '₹52,900', badge: 'Premium', img: 'https://m.media-amazon.com/images/I/51c1O9XTSJL._AC_SY450_.jpg', url: "/api/search?q=Dyson+V15+Vacuum" },
+                { name: 'Philips Air Purifier AC1215', price: '₹12,995', badge: 'Best Air', img: 'https://m.media-amazon.com/images/I/51c1O9XTSJL._AC_SY450_.jpg', url: "/api/search?q=Philips+Air+Purifier" },
+            ]
+        },
+        {
+            name: '💄 Beauty & Grooming',
+            icon: 'fa-spray-can',
+            search: 'Beauty Products',
+            products: [
+                { name: 'L\'Oreal Paris Revitalift Serum', price: '₹849', badge: 'Best Seller', img: 'https://m.media-amazon.com/images/I/71hDmf4WZLL._AC_SY450_.jpg', url: "/api/search?q=LOreal+Revitalift+Serum" },
+                { name: 'Maybelline Fit Me Foundation', price: '₹449', badge: 'Trending', img: 'https://m.media-amazon.com/images/I/71hDmf4WZLL._AC_SY450_.jpg', url: "/api/search?q=Maybelline+Fit+Me+Foundation" },
+                { name: 'Lakme 9-to-5 Primer', price: '₹349', badge: 'Popular', img: 'https://m.media-amazon.com/images/I/71hDmf4WZLL._AC_SY450_.jpg', url: "/api/search?q=Lakme+9to5+Primer" },
+                { name: 'Dove Deep Moisture Body Lotion', price: '₹299', badge: 'Value', img: 'https://m.media-amazon.com/images/I/71hDmf4WZLL._AC_SY450_.jpg', url: "/api/search?q=Dove+Body+Lotion" },
+                { name: 'Philips QT4001 Trimmer', price: '₹999', badge: 'Best Grooming', img: 'https://m.media-amazon.com/images/I/71hDmf4WZLL._AC_SY450_.jpg', url: "/api/search?q=Philips+Trimmer" },
+                { name: 'Biotique Bio Morning Nectare SPF', price: '₹199', badge: 'Daily', img: 'https://m.media-amazon.com/images/I/71hDmf4WZLL._AC_SY450_.jpg', url: "/api/search?q=Biotique+Sunscreen" },
+            ]
+        },
+    ];
+
+    const renderTrendingSections = () => {
+        const container = document.getElementById('trendingSections');
+        if (!container) return;
+        container.innerHTML = TRENDING_DATA.map(section => `
+            <div class="trending-section">
+                <div class="trending-section-header">
+                    <h2><i class="fa-solid ${section.icon}"></i> ${section.name}</h2>
+                    <a data-search="${section.search}">See All <i class="fa-solid fa-chevron-right"></i></a>
+                </div>
+                <div class="trending-row">
+                    ${section.products.map(p => `
+                        <div class="mini-card" data-search="${p.name}">
+                            <div class="mini-card-img" style="background-image:url('${p.img}')"></div>
+                            <div class="mini-card-info">
+                                <div class="mini-card-badge">${p.badge}</div>
+                                <div class="mini-card-name">${p.name}</div>
+                                <div class="mini-card-price">${p.price}</div>
+                                <div class="mini-card-stores">Amazon &amp; Flipkart</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+
+        // Wire up clicks on mini cards to search
+        container.querySelectorAll('.mini-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const q = card.getAttribute('data-search');
+                searchInput.value = q;
+                performSearch();
+            });
+        });
+
+        // Wire up "See All" links
+        container.querySelectorAll('[data-search]').forEach(a => {
+            if (a.tagName === 'A') {
+                a.addEventListener('click', () => {
+                    searchInput.value = a.getAttribute('data-search');
+                    performSearch();
+                });
+            }
+        });
+    };
+    renderTrendingSections();
 
     window.currentProducts = [];
 
@@ -312,6 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.activeCategoryFilters = null;
 
     // Build Categories UI (horizontal top-nav)
+    // Since .sub-cat-list uses position:fixed, we must set top/left via JS on hover
     const renderCategories = () => {
         categoryList.innerHTML = '';
         CATEGORIES.forEach(cat => {
@@ -327,6 +482,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${cat.sub.map(s => `<li class="sub-item" data-search="${s.search}">${s.name}</li>`).join('')}
                 </ul>
             `;
+
+            // Position the fixed dropdown under the trigger
+            const trigger = li.querySelector('.cat-item-top');
+            const subList = li.querySelector('.sub-cat-list');
+            const positionDropdown = () => {
+                const rect = trigger.getBoundingClientRect();
+                subList.style.top  = (rect.bottom + 4) + 'px';
+                subList.style.left = rect.left + 'px';
+            };
+            li.addEventListener('mouseenter', positionDropdown);
 
             const subItems = li.querySelectorAll('.sub-item');
             subItems.forEach(subItem => {
@@ -464,8 +629,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = searchInput.value.trim();
         if (!query) return;
 
-        // Hide hero landing on first search
-        if (heroLanding) heroLanding.style.display = 'none';
+        // Hide landing page on first search
+        if (landingPage) landingPage.style.display = 'none';
 
         // On a fresh search (not from a filter change), rebuild filters for the active category
         const filterSchema = window.activeCategoryFilters || null;
