@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PriceFinder - Compare & Save</title>
+    <title>PriceFinder - Compare &amp; Save on Amazon &amp; Flipkart</title>
+    <meta name="description" content="Compare prices across Amazon and Flipkart to find the lowest price on any product in India. Brand-new, first-hand products only.">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
@@ -15,34 +16,41 @@
 </head>
 <body>
     <div id="app">
-        <!-- Hero Section -->
+        <!-- ===== HEADER (sticky, Amazon/Flipkart style) ===== -->
         <header class="hero">
             <div class="header-nav">
+                <!-- Logo -->
                 <div class="logo">
                     <i class="fa-solid fa-tags"></i> PriceFinder
                 </div>
-            </div>
-            <div class="hero-content">
-                <h1 class="hero-title">Find the <span>Lowest Price</span> Across the Web</h1>
-                <p class="hero-subtitle">Compare prices across Amazon and Flipkart &mdash; <strong>new, first-hand products only.</strong></p>
-                
-                <!-- Horizontal Nav Categories -->
-                <nav class="top-categories">
-                    <ul id="categoryList" class="cat-list-horizontal">
-                        <!-- Populated by JS -->
-                    </ul>
-                </nav>
 
-                <div class="search-container">
-                    <input type="text" id="searchInput" placeholder="Search for any product... e.g., 'iPhone 15' or 'Nike Shoes'">
-                    <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                <!-- Search bar (visible in header) -->
+                <div class="header-search" id="headerSearch">
+                    <input type="text" id="searchInput" placeholder="Search for products, brands and more…" autocomplete="off">
+                    <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> <span>Search</span></button>
                 </div>
-                <p class="firsthand-notice"><i class="fa-solid fa-shield-halved"></i> We only list <strong>brand-new, first-hand products</strong> &mdash; no second-hand, refurbished or used items.</p>
             </div>
+
+            <!-- Category nav -->
+            <nav class="top-categories">
+                <ul id="categoryList" class="cat-list-horizontal">
+                    <!-- Populated by JS -->
+                </ul>
+            </nav>
         </header>
 
-        <!-- Main Layout -->
+        <!-- ===== HERO LANDING (shown before first search) ===== -->
+        <section id="heroLanding" class="hero-landing">
+            <h1 class="hero-title">Find the <span>Lowest Price</span> Instantly</h1>
+            <p class="hero-subtitle">Compare across Amazon &amp; Flipkart &mdash; brand-new, first-hand products only.</p>
+        </section>
+
+        <!-- ===== MAIN LAYOUT (sidebar + content, shown after search) ===== -->
         <div id="mainLayout" class="layout-container hidden">
+
+            <!-- Sidebar overlay (mobile backdrop) -->
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
             <!-- Sidebar -->
             <aside id="sidebar" class="sidebar">
                 <div id="filterBlock" class="sidebar-block">
@@ -53,22 +61,26 @@
                 </div>
             </aside>
 
-            <!-- Main Content area -->
+            <!-- Main Content -->
             <div class="content-wrapper">
+                <!-- Mobile filter toggle -->
+                <button class="filter-toggle-btn" id="filterToggleBtn">
+                    <i class="fa-solid fa-sliders"></i> Filters
+                </button>
+
                 <!-- Loading State -->
                 <div id="loadingState" class="hidden">
                     <div class="loader"></div>
-                    <p>Scanning all platforms for the best deals...</p>
+                    <p>Scanning platforms for the best deals…</p>
                 </div>
 
                 <!-- Results Section -->
                 <main id="resultsContainer" class="hidden">
                     <div class="results-header">
-                        <h2>Results for <span id="queryText" class="highlight">"iPhone"</span></h2>
+                        <h2>Showing results for <span id="queryText" class="highlight">"iPhone"</span></h2>
                     </div>
-                    
                     <div id="productGrid" class="product-grid">
-                        <!-- Product Cards will be injected here by JS -->
+                        <!-- Product Cards injected by JS -->
                     </div>
                 </main>
             </div>
@@ -76,6 +88,6 @@
     </div>
 
     <!-- Custom JS -->
-    <script src="/static/app.js?v=5"></script>
+    <script src="/static/app.js?v=6"></script>
 </body>
 </html>

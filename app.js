@@ -5,11 +5,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('resultsContainer');
     const queryText = document.getElementById('queryText');
     const productGrid = document.getElementById('productGrid');
-    const heroSection = document.querySelector('.hero');
+    const heroLanding = document.getElementById('heroLanding');
 
     const categoryList = document.getElementById('categoryList');
     const filtersContainer = document.getElementById('filtersContainer');
     const mainLayout = document.getElementById('mainLayout');
+
+    // Mobile sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+
+    if (filterToggleBtn) {
+        filterToggleBtn.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('active');
+        });
+    }
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+        });
+    }
 
     window.currentProducts = [];
 
@@ -446,11 +464,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = searchInput.value.trim();
         if (!query) return;
 
-        heroSection.style.minHeight = '30vh';
+        // Hide hero landing on first search
+        if (heroLanding) heroLanding.style.display = 'none';
 
         // On a fresh search (not from a filter change), rebuild filters for the active category
         const filterSchema = window.activeCategoryFilters || null;
         buildFilters(filterSchema);
+
+        // Close mobile sidebar if open
+        if (sidebar) sidebar.classList.remove('open');
+        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
 
         await performSearchWithQuery(query);
     };
