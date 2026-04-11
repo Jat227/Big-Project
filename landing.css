@@ -990,21 +990,120 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ============================================================
-   RESPONSIVE — SMALL MOBILE (≤ 480px)
+   PLATFORMS STRIP
    ============================================================ */
-@media (max-width: 480px) {
-    .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-    .cat-tile { padding: 1rem 0.75rem; }
-    .cat-tile i { font-size: 1.5rem; }
-    .sub-chips span { font-size: 0.62rem; }
-
-    .hero-stats { gap: 0.75rem; }
-    .stat-num { font-size: 1.2rem; }
-
-    .coming-card { padding: 1.25rem 1rem; }
-
-    .pd-right { flex-wrap: wrap; gap: 0.3rem; }
-
-    .sale-card { flex-direction: column; text-align: center; align-items: flex-start; }
-    .sale-card { align-items: center; }
+.platforms-strip {
+    background: rgba(255,255,255,0.03);
+    border-top: 1px solid var(--border-glass);
+    border-bottom: 1px solid var(--border-glass);
+    padding: 2rem 5vw;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem 2.5rem;
 }
+
+.ps-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.ps-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border-glass);
+    flex-shrink: 0;
+}
+
+.ps-platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.ps-platform {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.ps-platform i { font-size: 1rem; }
+
+/* Live platforms — green tinted */
+.ps-live {
+    background: rgba(0, 200, 83, 0.10);
+    border: 1px solid rgba(0, 200, 83, 0.28);
+    color: var(--text-white);
+}
+.ps-live:hover {
+    background: rgba(0, 200, 83, 0.16);
+    transform: translateY(-2px);
+}
+
+.ps-live-dot {
+    font-style: normal;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent-green);
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    animation: pulseDot 1.8s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+/* Coming soon platforms — muted glass */
+.ps-soon {
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed rgba(255,255,255,0.14);
+    color: var(--text-muted);
+}
+.ps-soon:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+    color: var(--text-light);
+}
+.ps-soon i { opacity: 0.55; }
+
+.ps-soon-dot {
+    font-style: normal;
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: rgba(156,39,176,0.18);
+    color: #ce93d8;
+    border: 1px solid rgba(156,39,176,0.28);
+    padding: 0.05rem 0.4rem;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+/* ── Responsive tweaks for platforms strip ── */
+@media (max-width: 768px) {
+    .platforms-strip {
+        gap: 1rem 1.25rem;
+        padding: 1.5rem 1.25rem;
+    }
+    .ps-divider { display: none; }
+    .ps-label { width: 100%; text-align: center; }
+    .ps-platforms { justify-content: center; }
+    .ps-platform { padding: 0.45rem 0.85rem; font-size: 0.78rem; }
+}
+
+@media (max-width: 480px) {
+    .ps-platform { padding: 0.4rem 0.7rem; font-size: 0.74rem; }
+}
+
