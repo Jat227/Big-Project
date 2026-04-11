@@ -531,6 +531,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const query = subItem.getAttribute('data-search');
                     searchInput.value = query;
                     window.activeCategoryFilters = cat.filters;
+                    window._catSetByNav = true;   // lock this category for the upcoming search
                     performSearch();
                 });
             });
@@ -658,10 +659,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const query = searchInput.value.trim();
         if (!query) return;
 
+        // Always auto-detect category from the search query so filters are
+        // populated regardless of how the search was triggered (Enter key,
+        // search button, mini-card click, or category nav sub-item click).
+        // Category nav clicks set _catSetByNav=true to lock the category;
+        // for all other trigger paths we re-detect from the query text.
+        if (!window._catSetByNav) {
+            detectAndApplyCategory(query);
+        }
+        // Reset the nav-lock so the next manual search re-detects freely
+        window._catSetByNav = false;
+
         // Hide landing page on first search
         if (landingPage) landingPage.style.display = 'none';
 
-        // On a fresh search (not from a filter change), rebuild filters for the active category
+        // Rebuild filters from the (now-updated) active category
         const filterSchema = window.activeCategoryFilters || null;
         buildFilters(filterSchema);
 
@@ -685,32 +697,34 @@ document.addEventListener('DOMContentLoaded', () => {
             catName: 'Mobiles & Tablets'
         },
         {
-            keys: ['laptop', 'macbook', 'notebook', 'pc', 'computer', 'monitor', 'headphone', 'earphone', 'earbud', 'smartwatch', 'camera', 'playstation', 'xbox'],
+            keys: ['laptop', 'macbook', 'notebook', 'pc', 'computer', 'monitor', 'headphone', 'earphone', 'earbud', 'smartwatch', 'watch', 'smart watch', 'apple watch', 'camera', 'playstation', 'xbox', 'charger', 'power bank', 'speaker'],
             catName: 'Electronics'
         },
         {
-            keys: ['shoe', 'sneaker', 'slipper', 'sandal', 'croc', 'heel', 'boot', 'loafer', 'flip flop'],
+            keys: ['shoe', 'sneaker', 'slipper', 'sandal', 'croc', 'heel', 'boot', 'loafer', 'flip flop', 'footwear', 'chappal', 'moccasin'],
             catName: 'Footwear'
         },
         {
-            keys: ['shirt', 'tshirt', 't-shirt', 'jeans', 'jean', 'trouser', 'pant', 'cargo', 'kurta', 'dress', 'saree', 'legging', 'jacket', 'hoodie', 'sweatshirt', 'tracksuit', 'shorts', 'skirt'],
+            keys: ['shirt', 'tshirt', 't-shirt', 'jeans', 'jean', 'trouser', 'pant', 'cargo', 'kurta', 'dress', 'saree', 'legging', 'jacket', 'hoodie', 'sweatshirt', 'tracksuit', 'shorts', 'skirt', 'blazer', 'top', 'lehenga', 'dupatta'],
             catName: 'Fashion & Apparel'
         },
         {
-            keys: ['tv', 'television', 'washing machine', 'air conditioner', 'refrigerator', 'fridge', 'microwave', 'air purifier', 'dishwasher', 'geyser', 'water heater', 'vacuum cleaner'],
+            keys: ['tv', 'television', 'washing machine', 'air conditioner', 'refrigerator', 'fridge', 'microwave', 'air purifier', 'dishwasher', 'geyser', 'water heater', 'vacuum cleaner', 'blender', 'mixer', 'induction', 'appliance', 'cooler', 'fan', 'iron'],
             catName: 'Home Appliances'
         },
         {
-            keys: ['makeup', 'lipstick', 'foundation', 'moisturizer', 'skincare', 'sunscreen', 'serum', 'perfume', 'fragrance', 'shampoo', 'conditioner', 'hair oil', 'face wash', 'toner'],
+            keys: ['makeup', 'lipstick', 'foundation', 'moisturizer', 'skincare', 'sunscreen', 'serum', 'perfume', 'fragrance', 'shampoo', 'conditioner', 'hair oil', 'face wash', 'toner', 'grooming', 'trimmer', 'razor', 'deodorant', 'body wash', 'cream', 'lotion', 'nykaa'],
             catName: 'Beauty & Grooming'
         },
         {
-            keys: ['toy', 'lego', 'puzzle', 'board game', 'action figure', 'remote control car', 'doll', 'bicycle', 'scooter'],
+            keys: ['toy', 'lego', 'puzzle', 'board game', 'action figure', 'remote control car', 'doll', 'bicycle', 'scooter', 'kids'],
             catName: 'Toys & Games'
         }
     ];
 
     let _detectDebounce = null;
+    // detectAndApplyCategory: sets window.activeCategoryFilters from the query text.
+    // When called during an active results view, also rebuilds the filter sidebar immediately.
     const detectAndApplyCategory = (text) => {
         if (!text || text.length < 3) return;
         const lower = text.toLowerCase();
@@ -719,13 +733,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const matched = CATEGORIES.find(c => c.name === entry.catName);
                 if (matched) {
                     window.activeCategoryFilters = matched.filters;
-                    // Only rebuild filters if sidebar is already open (after a search)
+                    // Live rebuild if already in results view (e.g. user keeps typing)
                     if (!mainLayout.classList.contains('hidden')) {
                         buildFilters(matched.filters);
                     }
                 }
                 return;
             }
+        }
+        // No category matched — clear stale filters so sidebar isn't misleading
+        if (!window._catSetByNav) {
+            window.activeCategoryFilters = null;
         }
     };
 
