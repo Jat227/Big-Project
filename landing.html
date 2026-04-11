@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PriceFinder — India's Smartest Price Comparison</title>
+    <meta name="description" content="Compare prices across Amazon & Flipkart instantly. Get sale alerts, browse hundreds of categories, and always pay the lowest price.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Landing CSS -->
+    <link rel="stylesheet" href="/static/landing.css">
+</head>
+<body>
+
+    <!-- =========================================================
+         STICKY BUY NOW BUTTON (always visible)
+    ========================================================= -->
+    <a href="/app" class="sticky-cta" id="stickyCta">
+        <i class="fa-solid fa-bolt"></i>
+        <span>Start Comparing</span>
+    </a>
+
+    <!-- =========================================================
+         HERO SECTION
+    ========================================================= -->
+    <section class="hero-section">
+        <div class="hero-bg-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+        <div class="hero-content reveal">
+            <div class="hero-badge"><i class="fa-solid fa-indian-rupee-sign"></i> Made for India</div>
+            <h1 class="hero-title">Stop Overpaying.<br><span class="gradient-text">Find the Lowest Price.</span></h1>
+            <p class="hero-subtitle">PriceFinder scans Amazon &amp; Flipkart in real-time to show you exactly where to buy — at the lowest price, every time.</p>
+            <div class="hero-cta-group">
+                <a href="/app" class="btn-primary">
+                    <i class="fa-solid fa-magnifying-glass"></i> Compare Prices Now
+                </a>
+                <a href="#features" class="btn-ghost">See How It Works <i class="fa-solid fa-arrow-down"></i></a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-num">2</span>
+                    <span class="stat-label">Platforms</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-num">50+</span>
+                    <span class="stat-label">Categories</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-num">Real-Time</span>
+                    <span class="stat-label">Price Data</span>
+                </div>
+            </div>
+        </div>
+        <!-- Hero Floating Device Mockup -->
+        <div class="hero-mockup reveal reveal-right">
+            <div class="mockup-card glass-card">
+                <div class="mockup-header">
+                    <div class="mockup-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="mockup-title">iPhone 15 128GB</div>
+                </div>
+                <div class="mockup-img-area">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                </div>
+                <div class="mockup-prices">
+                    <div class="mockup-price-row best">
+                        <div class="mprice-store"><i class="fa-brands fa-amazon"></i> Amazon</div>
+                        <div class="mprice-right">
+                            <span class="mprice-badge">Lowest ✓</span>
+                            <span class="mprice-val">₹69,999</span>
+                            <span class="mprice-btn">Buy →</span>
+                        </div>
+                    </div>
+                    <div class="mockup-price-row">
+                        <div class="mprice-store"><i class="fa-solid fa-shopping-bag"></i> Flipkart</div>
+                        <div class="mprice-right">
+                            <span class="mprice-val">₹71,499</span>
+                            <span class="mprice-btn">Buy →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         FEATURE 1 — PRICE COMPARISON
+    ========================================================= -->
+    <section class="feature-section" id="features">
+        <div class="section-label reveal"><i class="fa-solid fa-tags"></i> Feature 01</div>
+        <h2 class="section-title reveal">See the <span class="gradient-text">Lowest Price</span><br>on Every Platform</h2>
+        <p class="section-subtitle reveal">Every product shows a live row-by-row breakdown of prices from Amazon and Flipkart, with the cheapest one clearly highlighted.</p>
+
+        <div class="bento-grid reveal">
+            <!-- Card: Lowest badge -->
+            <div class="bento-card bento-large glass-card">
+                <div class="bento-icon-tag"><i class="fa-solid fa-certificate"></i></div>
+                <h3>Instant Lowest Price Badge</h3>
+                <p>The cheapest option is always highlighted in green with a "Lowest ✓" badge — no mental math needed.</p>
+                <div class="price-demo">
+                    <div class="pd-row pd-best">
+                        <div class="pd-left"><i class="fa-brands fa-amazon"></i><span>Amazon</span><em class="pd-badge">Lowest ✓</em></div>
+                        <div class="pd-right">₹12,499 <a class="pd-btn">View Deal →</a></div>
+                    </div>
+                    <div class="pd-row">
+                        <div class="pd-left"><i class="fa-solid fa-shopping-bag"></i><span>Flipkart</span></div>
+                        <div class="pd-right">₹13,999 <a class="pd-btn pd-btn-blue">View Deal →</a></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Side-by-side comparison -->
+            <div class="bento-card glass-card">
+                <div class="bento-icon-tag bento-icon-blue"><i class="fa-solid fa-scale-balanced"></i></div>
+                <h3>Side-by-Side Comparison</h3>
+                <p>Compare prices from multiple platforms for the same product in one glance.</p>
+                <div class="compare-mini">
+                    <div class="cm-platform amazon"><i class="fa-brands fa-amazon"></i><br><strong>₹8,299</strong><br><small>Amazon</small></div>
+                    <div class="cm-vs">VS</div>
+                    <div class="cm-platform flipkart"><i class="fa-solid fa-shopping-bag"></i><br><strong>₹9,499</strong><br><small>Flipkart</small></div>
+                </div>
+            </div>
+
+            <!-- Card: Save amount -->
+            <div class="bento-card glass-card bento-accent">
+                <div class="bento-icon-tag bento-icon-orange"><i class="fa-solid fa-piggy-bank"></i></div>
+                <h3>Know Exactly How Much You Save</h3>
+                <p>The price difference between platforms is visible at a glance.</p>
+                <div class="save-chip">
+                    <i class="fa-solid fa-circle-check"></i> Save up to <strong>₹3,500</strong> by choosing the right platform
+                </div>
+            </div>
+
+            <!-- Card: direct buy link -->
+            <div class="bento-card glass-card">
+                <div class="bento-icon-tag bento-icon-purple"><i class="fa-solid fa-link"></i></div>
+                <h3>Direct Buy Link</h3>
+                <p>Click "View Deal" to go straight to the product page on Amazon or Flipkart — no middleman.</p>
+                <div class="link-demo">
+                    <span class="ld-url">amazon.in/dp/B0CHX...</span>
+                    <span class="ld-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         FEATURE 2 — CATEGORIES & SUBCATEGORIES
+    ========================================================= -->
+    <section class="feature-section feature-section-alt">
+        <div class="section-label reveal"><i class="fa-solid fa-layer-group"></i> Feature 02</div>
+        <h2 class="section-title reveal"><span class="gradient-text">Hundreds of Categories</span><br>&amp; Sub-categories</h2>
+        <p class="section-subtitle reveal">From flagship phones to kitchen appliances — browse everything organized the way you think about it.</p>
+
+        <div class="categories-showcase reveal">
+            <div class="cat-grid">
+                <div class="cat-tile cat-mobiles">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span>Mobiles &amp; Tablets</span>
+                    <div class="sub-chips">
+                        <span>iPhone</span><span>Samsung Galaxy</span><span>OnePlus</span><span>Tablets</span>
+                    </div>
+                </div>
+                <div class="cat-tile cat-electronics">
+                    <i class="fa-solid fa-laptop"></i>
+                    <span>Electronics</span>
+                    <div class="sub-chips">
+                        <span>Laptops</span><span>Smartwatches</span><span>Headphones</span><span>Cameras</span>
+                    </div>
+                </div>
+                <div class="cat-tile cat-fashion">
+                    <i class="fa-solid fa-shirt"></i>
+                    <span>Fashion</span>
+                    <div class="sub-chips">
+                        <span>Men's T-Shirts</span><span>Women's Dresses</span><span>Kurtas</span>
+                    </div>
+                </div>
+                <div class="cat-tile cat-footwear">
+                    <i class="fa-solid fa-shoe-prints"></i>
+                    <span>Footwear</span>
+                    <div class="sub-chips">
+                        <span>Sports Shoes</span><span>Formal</span><span>Heels</span><span>Crocs</span>
+                    </div>
+                </div>
+                <div class="cat-tile cat-appliances">
+                    <i class="fa-solid fa-blender"></i>
+                    <span>Home Appliances</span>
+                    <div class="sub-chips">
+                        <span>Refrigerators</span><span>ACs</span><span>Washing Machines</span>
+                    </div>
+                </div>
+                <div class="cat-tile cat-beauty">
+                    <i class="fa-solid fa-spray-can"></i>
+                    <span>Beauty &amp; Grooming</span>
+                    <div class="sub-chips">
+                        <span>Skincare</span><span>Makeup</span><span>Perfumes</span>
+                    </div>
+                </div>
+                <div class="cat-tile cat-toys">
+                    <i class="fa-solid fa-puzzle-piece"></i>
+                    <span>Toys &amp; Games</span>
+                    <div class="sub-chips">
+                        <span>LEGO</span><span>Board Games</span><span>RC Toys</span>
+                    </div>
+                </div>
+                <div class="cat-tile cat-more">
+                    <i class="fa-solid fa-ellipsis"></i>
+                    <span>And More...</span>
+                    <div class="sub-chips">
+                        <span>Books</span><span>Sports</span><span>Pet Supplies</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-showcase reveal">
+            <div class="fs-label"><i class="fa-solid fa-sliders"></i> Smart Filters Per Category</div>
+            <div class="fs-filters">
+                <span class="fs-tag fs-active">8 GB RAM</span>
+                <span class="fs-tag">128 GB</span>
+                <span class="fs-tag">256 GB</span>
+                <span class="fs-tag fs-active">Samsung</span>
+                <span class="fs-tag">Blue</span>
+                <span class="fs-tag">₹10k – ₹30k</span>
+                <span class="fs-tag">Apple</span>
+                <span class="fs-tag fs-active">OnePlus</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         FEATURE 3 — SALE ALERTS
+    ========================================================= -->
+    <section class="feature-section">
+        <div class="section-label reveal"><i class="fa-solid fa-bell"></i> Feature 03</div>
+        <h2 class="section-title reveal">Never Miss a <span class="gradient-text">Sale Again</span></h2>
+        <p class="section-subtitle reveal">A live scrolling ticker at the top of the site constantly shows you the latest deals from Amazon and Flipkart — in real time.</p>
+
+        <div class="sale-showcase reveal">
+            <!-- Simulated ticker -->
+            <div class="ticker-demo glass-card">
+                <div class="td-label">🔴 LIVE DEALS &nbsp;</div>
+                <div class="td-track-wrap">
+                    <div class="td-track">
+                        <a class="td-item"><i class="fa-solid fa-bolt" style="color:#ff9f00"></i><span class="td-platform amazon-tag">Amazon</span>Deals of the Day — Up to 60% OFF on Electronics</a>
+                        <a class="td-item"><i class="fa-solid fa-fire" style="color:#2874f0"></i><span class="td-platform flipkart-tag">Flipkart</span>Big Saving Days — Electronics deals live now</a>
+                        <a class="td-item"><i class="fa-solid fa-percent" style="color:#ff9f00"></i><span class="td-platform amazon-tag">Amazon</span>Laptops &amp; Accessories — Extra Bank Cashback</a>
+                        <a class="td-item"><i class="fa-solid fa-tag" style="color:#2874f0"></i><span class="td-platform flipkart-tag">Flipkart</span>Fashion Sale — Min 50% OFF + Extra Coupon</a>
+                        <a class="td-item"><i class="fa-solid fa-bolt" style="color:#ff9f00"></i><span class="td-platform amazon-tag">Amazon</span>Deals of the Day — Up to 60% OFF on Electronics</a>
+                        <a class="td-item"><i class="fa-solid fa-fire" style="color:#2874f0"></i><span class="td-platform flipkart-tag">Flipkart</span>Big Saving Days — Electronics deals live now</a>
+                        <a class="td-item"><i class="fa-solid fa-percent" style="color:#ff9f00"></i><span class="td-platform amazon-tag">Amazon</span>Laptops &amp; Accessories — Extra Bank Cashback</a>
+                        <a class="td-item"><i class="fa-solid fa-tag" style="color:#2874f0"></i><span class="td-platform flipkart-tag">Flipkart</span>Fashion Sale — Min 50% OFF + Extra Coupon</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sale alert cards row -->
+            <div class="sale-cards">
+                <div class="sale-card glass-card">
+                    <div class="sc-icon amazon-bg"><i class="fa-brands fa-amazon"></i></div>
+                    <div class="sc-body">
+                        <div class="sc-title">Today's Deal</div>
+                        <div class="sc-desc">Limited-time price drops on Mobiles</div>
+                        <div class="sc-discount">Up to 60% OFF</div>
+                    </div>
+                </div>
+                <div class="sale-card glass-card">
+                    <div class="sc-icon flipkart-bg"><i class="fa-solid fa-shopping-bag"></i></div>
+                    <div class="sc-body">
+                        <div class="sc-title">Big Saving Days</div>
+                        <div class="sc-desc">Electronics &amp; Fashion — Live Now</div>
+                        <div class="sc-discount">Min 50% OFF</div>
+                    </div>
+                </div>
+                <div class="sale-card glass-card">
+                    <div class="sc-icon cashback-bg"><i class="fa-solid fa-percent"></i></div>
+                    <div class="sc-body">
+                        <div class="sc-title">Bank Cashback</div>
+                        <div class="sc-desc">Extra 10% with select bank cards</div>
+                        <div class="sc-discount">Extra 10%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         COMING SOON
+    ========================================================= -->
+    <section class="feature-section feature-section-alt coming-soon-section">
+        <div class="section-label reveal"><i class="fa-solid fa-rocket"></i> What's Next</div>
+        <h2 class="section-title reveal">Exciting Features <span class="gradient-text">Coming Soon</span></h2>
+        <p class="section-subtitle reveal">We're building powerful tools to make you an even smarter shopper.</p>
+
+        <div class="coming-grid reveal">
+            <div class="coming-card glass-card">
+                <div class="coming-icon"><i class="fa-solid fa-brain"></i></div>
+                <div class="coming-tag">AI Powered</div>
+                <h3>AI Price Prediction</h3>
+                <p>Our ML model predicts whether to buy now or wait — based on historical price trends and upcoming sales.</p>
+                <div class="coming-badge">Coming Soon</div>
+            </div>
+
+            <div class="coming-card glass-card">
+                <div class="coming-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="coming-tag">Analytics</div>
+                <h3>Price History Charts</h3>
+                <p>See how a product's price has changed over the last 30/90 days. Never get fooled by fake discounts again.</p>
+                <div class="coming-badge">Coming Soon</div>
+            </div>
+
+            <div class="coming-card glass-card">
+                <div class="coming-icon"><i class="fa-solid fa-bell"></i></div>
+                <div class="coming-tag">Notifications</div>
+                <h3>Price Drop Alerts</h3>
+                <p>Set a target price on any product. We'll notify you instantly when the price drops below your target.</p>
+                <div class="coming-badge">Coming Soon</div>
+            </div>
+
+            <div class="coming-card glass-card">
+                <div class="coming-icon"><i class="fa-solid fa-heart"></i></div>
+                <div class="coming-tag">Personalization</div>
+                <h3>Wishlist &amp; Tracker</h3>
+                <p>Save your favourite products and track their prices across platforms — all in one personal dashboard.</p>
+                <div class="coming-badge">Coming Soon</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         FOOTER CTA
+    ========================================================= -->
+    <section class="footer-cta">
+        <div class="footer-cta-content reveal">
+            <h2>Ready to Start Saving?</h2>
+            <p>Join thousands of smart Indian shoppers who always pay the lowest price.</p>
+            <a href="/app" class="btn-primary btn-large">
+                <i class="fa-solid fa-magnifying-glass"></i> Start Comparing Prices →
+            </a>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-logo"><i class="fa-solid fa-tags"></i> PriceFinder</div>
+            <div class="footer-links">
+                <span>Amazon</span>
+                <span>Flipkart</span>
+                <span>India's Price Engine</span>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Intersection Observer for reveal animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.12 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Sticky CTA pulse on scroll
+        const stickyCta = document.getElementById('stickyCta');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                stickyCta.classList.add('cta-scrolled');
+            } else {
+                stickyCta.classList.remove('cta-scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
